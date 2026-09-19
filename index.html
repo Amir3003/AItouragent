@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zari Travel — Ваше лучшее лето начинается здесь</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"></script>
+<style>
+  /* ---------------------------------------------------------------------
+     Brand tokens. Palette follows the existing Zari Travel identity from
+     the client's screenshots: deep green hero, warm cream cards, lime
+     accent on the headline, coral CTA, gold for VIP room privileges.
+  --------------------------------------------------------------------- */
+  :root{
+    --ink:#152621;
+    --ink-soft:#2c4038;
+    --cream:#faf6ec;
+    --cream-2:#f2ecdd;
+    --line:#e2dac4;
+    --lime:#cfe25f;
+    --coral:#e97b5c;
+    --coral-dark:#d1613f;
+    --gold:#c79a44;
+    --gold-bg:#fbf3e0;
+    --muted:#6f7a72;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Inter',system-ui,sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.serif{font-family:'Fraunces',serif;}
+  .eyebrow{
+    font-size:.72rem;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    font-weight:600;
+  }
+  /* ---- Hero ------------------------------------------------------- */
+  .hero{
+    position:relative;
+    min-height:640px;
+    background:
+      linear-gradient(180deg, rgba(11,30,25,.55) 0%, rgba(11,30,25,.35) 45%, rgba(11,30,25,.75) 100%),
+      url('https://images.unsplash.com/photo-1573052905904-34ad8c27f0cc?auto=format&fit=crop&w=1800&q=80') center/cover no-repeat;
+    color:#fff;
+  }
+  .hero__nav{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:28px 6vw 0;
+  }
+  .hero__logo{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.06em;}
+  .hero__logo-dot{width:30px;height:30px;border-radius:50%;background:var(--lime);}
+  .hero__pill{
+    border:1px solid rgba(255,255,255,.55);
+    border-radius:999px;padding:8px 18px;font-size:.85rem;
+  }
+  .hero__content{padding:64px 6vw 180px;max-width:760px;}
+  .hero__content h1{
+    font-size:clamp(2.4rem,5vw,3.6rem);
+    line-height:1.12;font-weight:500;margin:18px 0 20px;
+  }
+  .hero__content h1 .accent{color:var(--lime);}
+  .hero__subtitle{font-size:1.05rem;line-height:1.6;color:rgba(255,255,255,.88);max-width:520px;}
+
+  /* ---- Shell / search card ----------------------------------------- */
+  .shell{max-width:1180px;margin:0 auto;padding:0 6vw 90px;}
+  .search-card{
+    background:var(--cream);
+    border-radius:28px;
+    box-shadow:0 30px 60px -30px rgba(20,40,32,.35);
+    padding:34px clamp(20px,4vw,48px) 40px;
+    margin-top:-150px;
+    position:relative;
+  }
+  .search-card__head{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:6px 0 26px;}
+  .search-card__head h2{font-size:clamp(1.6rem,3vw,2.1rem);font-weight:500;margin:0;}
+  .search-card__hint{color:var(--muted);font-size:.9rem;}
+
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field label{font-size:.78rem;color:var(--muted);font-weight:600;}
+  .field input,.field select{
+    appearance:none;-webkit-appearance:none;
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:16px;
+    padding:13px 16px;
+    font-size:.95rem;
+    font-family:inherit;
+    color:var(--ink);
+  }
+  .field select{
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'><path d='M1 1l6 6 6-6' stroke='%236f7a72' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat:no-repeat;background-position:right 16px center;padding-right:38px;
+  }
+  .field input:focus,.field select:focus{outline:none;border-color:var(--ink-soft);box-shadow:0 0 0 3px rgba(21,38,33,.08);}
+  .fields-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px;}
+  .fields-grid--five{grid-template-columns:repeat(5,1fr);}
+  @media(max-width:900px){.fields-grid,.fields-grid--five{grid-template-columns:repeat(2,1fr);}}
+
+  .children-ages{display:flex;gap:12px;flex-wrap:wrap;margin:-4px 0 16px;}
+  .children-ages .field{width:150px;}
+
+  .amenities-row{margin:10px 0 26px;}
+  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;}
+  .chip{
+    border:1px solid var(--line);background:#fff;border-radius:999px;
+    padding:9px 18px;font-size:.88rem;cursor:pointer;color:var(--ink-soft);
+    transition:.15s ease;user-select:none;
+  }
+  .chip:hover{border-color:var(--ink-soft);}
+  .chip.is-active{background:var(--ink);border-color:var(--ink);color:#fff;}
+
+  .btn-primary{
+    background:var(--coral);color:#fff;border:none;border-radius:999px;
+    padding:16px 30px;font-size:1rem;font-weight:600;cursor:pointer;
+    transition:.15s ease;
+  }
+  .btn-primary:hover{background:var(--coral-dark);}
+  .btn-primary:disabled{opacity:.6;cursor:default;}
+  .btn-primary--block{width:100%;}
+
+  .form-error{color:#b8452b;font-size:.82rem;margin-top:-8px;margin-bottom:14px;min-height:1em;}
+
+  /* ---- Results ------------------------------------------------------ */
+  .results{margin-top:64px;}
+  .results__meta{color:var(--muted);margin:10px 0 26px;font-size:.95rem;}
+  .results-grid{display:grid;grid-template-columns:1fr;gap:26px;}
+  .empty-state{
+    text-align:center;padding:60px 20px;border:1px dashed var(--line);
+    border-radius:24px;color:var(--muted);
+  }
+  .loading-state{text-align:center;padding:60px 20px;color:var(--muted);}
+
+  .hotel-card{
+    background:#fff;border:1px solid var(--line);border-radius:26px;overflow:hidden;
+  }
+  .hotel-card__cover{
+    position:relative;height:230px;background-size:cover;background-position:center;
+  }
+  .hotel-card__badges{position:absolute;top:16px;left:16px;right:16px;display:flex;gap:8px;flex-wrap:wrap;}
+  .badge{
+    background:rgba(21,38,33,.72);color:#fff;font-size:.76rem;font-weight:600;
+    padding:6px 12px;border-radius:999px;backdrop-filter:blur(4px);
+  }
+  .badge--status{background:rgba(233,123,92,.9);}
+  .hotel-card__body{padding:26px clamp(18px,3vw,32px) 30px;}
+  .hotel-card__head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;}
+  .hotel-card__head h3{font-size:1.4rem;font-weight:500;margin:0;}
+  .hotel-card__rating{white-space:nowrap;font-weight:600;color:var(--gold);}
+  .hotel-card__rating span{color:var(--muted);font-weight:400;font-size:.82rem;margin-left:4px;}
+  .hotel-card__city{color:var(--muted);margin:4px 0 18px;font-size:.92rem;}
+
+  .pros-cons{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px;}
+  @media(max-width:640px){.pros-cons{grid-template-columns:1fr;}}
+  .pros-cons ul{list-style:none;margin:0;padding:0;font-size:.87rem;line-height:1.55;}
+  .pros-cons li{padding-left:20px;position:relative;margin-bottom:4px;}
+  .pros li::before{content:"+";position:absolute;left:0;color:#3f8c5f;font-weight:700;}
+  .cons li::before{content:"–";position:absolute;left:0;color:#b8452b;font-weight:700;}
+
+  .room-selector-label{font-weight:600;font-size:.92rem;margin-bottom:12px;}
+  .rooms{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:24px;}
+  .room-tile{
+    border:1.5px solid var(--line);border-radius:18px;padding:14px;cursor:pointer;
+    transition:.15s ease;
+  }
+  .room-tile:hover{border-color:var(--ink-soft);}
+  .room-tile.is-selected{border-color:var(--coral);box-shadow:0 0 0 3px rgba(233,123,92,.15);}
+  .room-tile.is-vip{background:var(--gold-bg);}
+  .room-tile.is-vip.is-selected{border-color:var(--gold);box-shadow:0 0 0 3px rgba(199,154,68,.2);}
+  .room-tile__gallery{position:relative;border-radius:12px;overflow:hidden;height:120px;margin-bottom:10px;}
+  .room-tile__gallery img{width:100%;height:100%;object-fit:cover;display:block;}
+  .room-tile__dots{position:absolute;bottom:8px;left:0;right:0;display:flex;justify-content:center;gap:5px;}
+  .room-tile__dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.55);border:none;padding:0;cursor:pointer;}
+  .room-tile__dot.is-active{background:#fff;}
+  .room-tile__name{font-weight:600;font-size:.93rem;margin:0 0 2px;}
+  .room-tile__meta{font-size:.78rem;color:var(--muted);margin:0 0 8px;}
+  .room-tile__list{list-style:none;margin:0 0 8px;padding:0;font-size:.76rem;line-height:1.45;}
+  .room-tile__list li{padding-left:14px;position:relative;}
+  .room-tile__list.included li::before{content:"✓";position:absolute;left:0;color:#3f8c5f;}
+  .room-tile__list.excluded li{color:var(--muted);text-decoration:line-through;}
+  .room-tile__list.excluded li::before{content:"–";position:absolute;left:0;}
+  .room-tile__vip{background:#fff;border:1px solid var(--gold);border-radius:10px;padding:8px 10px;margin-bottom:8px;}
+  .room-tile__vip-label{font-size:.72rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:4px;}
+  .room-tile__vip ul{list-style:none;margin:0;padding:0;font-size:.76rem;line-height:1.5;}
+  .room-tile__price{font-weight:600;font-size:.88rem;margin:6px 0 8px;}
+  .room-tile__select{
+    width:100%;border-radius:999px;border:1.5px solid var(--ink);background:transparent;
+    color:var(--ink);font-weight:600;font-size:.82rem;padding:7px 0;cursor:pointer;
+  }
+  .room-tile.is-selected .room-tile__select{background:var(--coral);border-color:var(--coral);color:#fff;}
+
+  .hotel-card__footer{
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    border-top:1px solid var(--line);padding-top:20px;
+  }
+  .price__label{display:block;font-size:.78rem;color:var(--muted);}
+  .price__value{font-family:'Fraunces',serif;font-size:1.6rem;}
+
+  /* ---- Booking modal -------------------------------------------------- */
+  .modal-backdrop{
+    position:fixed;inset:0;background:rgba(15,26,22,.55);backdrop-filter:blur(6px);
+    display:flex;align-items:center;justify-content:center;padding:20px;z-index:50;
+  }
+  .modal{
+    background:#fff;border-radius:26px;max-width:440px;width:100%;
+    padding:32px clamp(22px,4vw,36px) 34px;position:relative;
+  }
+  .modal__close{
+    position:absolute;top:18px;right:18px;border:none;background:var(--cream-2);
+    width:32px;height:32px;border-radius:50%;font-size:1rem;cursor:pointer;color:var(--ink);
+  }
+  .modal__summary{background:var(--cream);border-radius:16px;padding:16px 18px;margin:18px 0 24px;}
+  .modal__summary p{margin:0 0 4px;font-size:.86rem;color:var(--muted);}
+  .modal__summary strong{font-size:1.05rem;}
+  .modal__price{font-family:'Fraunces',serif;font-size:1.4rem;margin-top:6px;}
+  .modal .field{margin-bottom:16px;}
+  .modal-success{text-align:center;padding:20px 0 10px;}
+  .modal-success__check{
+    width:64px;height:64px;border-radius:50%;background:#e7f4ea;color:#3f8c5f;
+    display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:1.8rem;
+  }
+  .modal-success h3{margin:0 0 10px;font-size:1.3rem;}
+  .modal-success p{color:var(--muted);font-size:.92rem;line-height:1.5;margin:0;}
+  [hidden]{display:none !important;}
+</style>
+</head>
+<body>
+
+<!-- ============================== HERO ============================== -->
+<div class="hero">
+  <nav class="hero__nav">
+    <div class="hero__logo">
+      <span class="hero__logo-dot"></span>
+      <span>ZARI TRAVEL</span>
+    </div>
+    <span class="hero__pill">private travel desk</span>
+  </nav>
+  <div class="hero__content">
+    <p class="eyebrow">TRAVEL, MADE PERSONAL</p>
+    <h1>Ваше лучшее<br><span class="accent">лето начинается здесь.</span></h1>
+    <p class="hero__subtitle">Премиальная подборка отелей с честными ценами, отзывами и вниманием к деталям поездки.</p>
+  </div>
+</div>
+
+<!-- ============================== SHELL ============================== -->
+<main class="shell">
+
+  <!-- ---- Search / filters card ---- -->
+  <section class="search-card">
+    <p class="eyebrow" style="color:var(--ink-soft)">ВАШ МАРШРУТ</p>
+    <div class="search-card__head">
+      <h2>Соберите идеальный отдых</h2>
+      <span class="search-card__hint" id="hotelsHint">каталог загружается…</span>
+    </div>
+
+    <form id="searchForm" novalidate>
+      <div class="fields-grid">
+        <div class="field">
+          <label for="cityFrom">Город вылета</label>
+          <input id="cityFrom" name="city_from" type="text" value="Астана" required minlength="2">
+        </div>
+        <div class="field">
+          <label for="dateStart">Дата вылета</label>
+          <input id="dateStart" name="date_start" type="date" required>
+        </div>
+        <div class="field">
+          <label for="budget">Бюджет, ₸</label>
+          <input id="budget" name="budget_kzt" type="number" min="1" step="10000" value="1200000" required>
+        </div>
+        <div class="field">
+          <label for="nights">Ночей</label>
+          <input id="nights" name="nights" type="number" min="1" max="30" value="7" required>
+        </div>
+      </div>
+
+      <div class="fields-grid fields-grid--five">
+        <div class="field">
+          <label for="country">Страна</label>
+          <select id="country" name="country"><option value="">Любая страна</option></select>
+        </div>
+        <div class="field">
+          <label for="adults">Взрослые</label>
+          <select id="adults" name="adults"></select>
+        </div>
+        <div class="field">
+          <label for="children">Дети</label>
+          <select id="children" name="children"></select>
+        </div>
+        <div class="field">
+          <label for="stars">Звёзды</label>
+          <select id="stars" name="stars"><option value="">Любая категория</option></select>
+        </div>
+        <div class="field">
+          <label for="mealType">Питание</label>
+          <select id="mealType" name="meal_type"><option value="">Любое питание</option></select>
+        </div>
+      </div>
+
+      <div id="childrenAgesRow" class="children-ages" hidden></div>
+
+      <div class="amenities-row">
+        <p class="room-selector-label" style="margin-bottom:0;">Что важно в отеле?</p>
+        <div class="chips" id="amenityChips"></div>
+      </div>
+
+      <p class="form-error" id="formError"></p>
+      <button type="submit" class="btn-primary" id="submitBtn">Найти подходящие туры</button>
+    </form>
+  </section>
+
+  <!-- ---- Results ---- -->
+  <section class="results">
+    <p class="eyebrow" style="color:var(--ink-soft)">ZARI SELECT</p>
+    <p class="results__meta" id="resultsMeta">Заполните маршрут выше и нажмите «Найти подходящие туры».</p>
+    <div class="results-grid" id="resultsGrid"></div>
+  </section>
+</main>
+
+<!-- ============================== BOOKING MODAL ============================== -->
+<div class="modal-backdrop" id="modalBackdrop" hidden>
+  <div class="modal">
+    <button class="modal__close" id="modalClose" aria-label="Закрыть">&times;</button>
+
+    <!-- Step 1: booking form -->
+    <div id="modalFormStep">
+      <p class="eyebrow" style="color:var(--ink-soft)">Заявка на тур</p>
+      <h3 class="serif" style="font-size:1.5rem;margin:8px 0 0;">Забронировать тур</h3>
+      <div class="modal__summary">
+        <p>Отель</p><strong id="modalHotelName">—</strong>
+        <p style="margin-top:10px;">Категория номера</p><strong id="modalRoomName">—</strong>
+        <div class="modal__price" id="modalPrice">— ₸</div>
+      </div>
+      <form id="bookingForm" novalidate>
+        <div class="field">
+          <label for="clientName">ФИО клиента</label>
+          <input id="clientName" type="text" placeholder="Иванов Иван Иванович" required minlength="3">
+        </div>
+        <div class="field">
+          <label for="clientWhatsapp">Номер WhatsApp</label>
+          <input id="clientWhatsapp" type="tel" placeholder="+7 (7XX) XXX-XX-XX" required>
+        </div>
+        <p class="form-error" id="bookingError"></p>
+        <button type="submit" class="btn-primary btn-primary--block">Отправить заявку</button>
+      </form>
+    </div>
+
+    <!-- Step 2: success -->
+    <div id="modalSuccessStep" hidden class="modal-success">
+      <div class="modal-success__check">✓</div>
+      <h3 class="serif">Заявка принята!</h3>
+      <p>Менеджер свяжется с вами в WhatsApp в течение 5 минут.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================================
+   Zari Travel — фронтенд MVP.
+   Архитектура: один HTML-файл, без сборщика. Данные приходят с FastAPI:
+     GET  /api/v1/meta   -> списки для селектов/чипов + счётчик отелей
+     POST /api/v1/search -> массив HotelRecommendation по фильтрам формы
+   Состояние выбора номера у каждой карточки отеля храним в Map
+   (hotelId -> {hotel, selectedRoomId}), чтобы кнопка "Забронировать тур"
+   всегда знала текущую цену без повторного похода в DOM.
+========================================================================= */
+
+const state = {
+  amenities: [],          // выбранные чипы удобств
+  cardsById: new Map(),   // hotelId -> { hotel, selectedRoomId }
+};
+
+const el = (id) => document.getElementById(id);
+
+/* ---------------------------- META / СПРАВОЧНИКИ ---------------------- */
+
+async function loadMeta() {
+  const res = await fetch('/api/v1/meta');
+  const meta = await res.json();
+
+  // Страна
+  const countrySelect = el('country');
+  meta.countries.forEach((c) => countrySelect.add(new Option(c, c)));
+
+  // Звёзды
+  const starsSelect = el('stars');
+  meta.star_options.forEach((s) => starsSelect.add(new Option(`${s}★ и выше`, s)));
+
+  // Питание
+  const mealSelect = el('mealType');
+  meta.meal_types.forEach((m) => mealSelect.add(new Option(m.label, m.value)));
+
+  // Взрослые / Дети (простые диапазоны, не завязаны на meta)
+  const adultsSelect = el('adults');
+  for (let i = 1; i <= 6; i++) adultsSelect.add(new Option(`${i} взросл${i === 1 ? 'ый' : 'ых'}`, i));
+  adultsSelect.value = '2';
+
+  const childrenSelect = el('children');
+  for (let i = 0; i <= 4; i++) childrenSelect.add(new Option(i === 0 ? 'Нет детей' : `${i} ${i === 1 ? 'ребёнок' : 'детей'}`, i));
+  childrenSelect.value = '0';
+  childrenSelect.addEventListener('change', renderChildrenAgeInputs);
+
+  // Чипы удобств
+  const chipsHost = el('amenityChips');
+  meta.amenities.forEach((a) => {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip';
+    chip.textContent = amenityLabel(a.value);
+    chip.dataset.value = a.value;
+    chip.addEventListener('click', () => toggleAmenity(chip));
+    chipsHost.appendChild(chip);
+  });
+
+  el('hotelsHint').textContent = `${meta.hotels_total} отелей в ${meta.countries.length} странах`;
+
+  // Дата вылета по умолчанию — через 2 недели
+  const defaultDate = new Date();
+  defaultDate.setDate(defaultDate.getDate() + 14);
+  el('dateStart').value = defaultDate.toISOString().slice(0, 10);
+}
+
+function amenityLabel(value) {
+  const map = {
+    'wifi': 'Wi-Fi',
+    'аквапарк': 'Аквапарк',
+    'песчаный пляж': 'Песчаный пляж',
+    'первая линия': 'Первая линия',
+    'детский клуб': 'Детский клуб',
+    'свой пляж': 'Свой пляж',
+  };
+  return map[value] || value;
+}
+
+function toggleAmenity(chip) {
+  chip.classList.toggle('is-active');
+  const value = chip.dataset.value;
+  state.amenities = state.amenities.includes(value)
+    ? state.amenities.filter((v) => v !== value)
+    : [...state.amenities, value];
+}
+
+function renderChildrenAgeInputs() {
+  const count = Number(el('children').value);
+  const row = el('childrenAgesRow');
+  row.innerHTML = '';
+  if (count === 0) { row.hidden = true; return; }
+  row.hidden = false;
+  for (let i = 0; i < count; i++) {
+    const wrap = document.createElement('div');
+    wrap.className = 'field';
+    wrap.innerHTML = `
+      <label>Возраст ребёнка ${i + 1}</label>
+      <input type="number" min="0" max="17" value="8" class="child-age-input" required>`;
+    row.appendChild(wrap);
+  }
+}
+
+/* ------------------------------- ПОИСК ТУРОВ --------------------------- */
+
+el('searchForm').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  el('formError').textContent = '';
+
+  const childrenAges = Array.from(document.querySelectorAll('.child-age-input')).map((i) => Number(i.value));
+  const payload = {
+    city_from: el('cityFrom').value,
+    date_start: el('dateStart').value,
+    budget_kzt: Number(el('budget').value),
+    nights: Number(el('nights').value),
+    adults: Number(el('adults').value),
+    children: Number(el('children').value),
+    children_ages: childrenAges,
+    country: el('country').value || null,
+    stars: el('stars').value ? Number(el('stars').value) : null,
+    meal_type: el('mealType').value || null,
+    amenities: state.amenities,
+  };
+
+  const submitBtn = el('submitBtn');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Ищем туры…';
+  el('resultsMeta').textContent = 'Подбираем отели под ваш маршрут…';
+  el('resultsGrid').innerHTML = '';
+
+  try {
+    const res = await fetch('/api/v1/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => null);
+      const message = body?.errors?.[0]?.message || body?.message || 'Проверьте параметры поиска.';
+      el('formError').textContent = message;
+      el('resultsMeta').textContent = '';
+      return;
+    }
+
+    const hotels = await res.json();
+    renderResults(hotels);
+  } catch (err) {
+    el('formError').textContent = 'Не удалось выполнить поиск. Проверьте соединение и попробуйте снова.';
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Найти подходящие туры';
+  }
+});
+
+function renderResults(hotels) {
+  state.cardsById.clear();
+  const grid = el('resultsGrid');
+  grid.innerHTML = '';
+
+  if (!hotels.length) {
+    el('resultsMeta').textContent = 'По этим параметрам туров не нашлось — попробуйте увеличить бюджет или снять пару фильтров.';
+    grid.innerHTML = '<div class="empty-state">Ничего подходящего не найдено</div>';
+    return;
+  }
+
+  el('resultsMeta').textContent = `Нашли ${hotels.length} подходящих отел${hotels.length === 1 ? 'ь' : 'я'}, отсортировано по рейтингу.`;
+  hotels.forEach((hotel) => {
+    state.cardsById.set(hotel.id, { hotel, selectedRoomId: hotel.room_options[0].id });
+    grid.appendChild(buildHotelCard(hotel));
+  });
+}
+
+/* --------------------------- КАРТОЧКА ОТЕЛЯ ---------------------------- */
+
+function buildHotelCard(hotel) {
+  const card = document.createElement('article');
+  card.className = 'hotel-card';
+  card.dataset.hotelId = hotel.id;
+
+  const country = hotel.country_city.split(',')[0].trim();
+
+  card.innerHTML = `
+    <div class="hotel-card__cover" style="background-image:url('${hotel.image_url}')">
+      <div class="hotel-card__badges">
+        <span class="badge">${country}</span>
+        <span class="badge">${hotel.stars}★</span>
+        <span class="badge badge--status">${hotel.seats_flight}</span>
+      </div>
+    </div>
+    <div class="hotel-card__body">
+      <div class="hotel-card__head">
+        <h3>${hotel.hotel_name}</h3>
+        <div class="hotel-card__rating">★ ${hotel.rating.toFixed(1)}/5 <span>${hotel.reviews_count} отзывов</span></div>
+      </div>
+      <p class="hotel-card__city">${hotel.country_city} · ${hotel.meal_type}</p>
+
+      <div class="pros-cons">
+        <ul class="pros">${hotel.pros.map((p) => `<li>${p}</li>`).join('')}</ul>
+        <ul class="cons">${hotel.cons.map((c) => `<li>${c}</li>`).join('')}</ul>
+      </div>
+
+      <p class="room-selector-label">Выберите номер</p>
+      <div class="rooms">${hotel.room_options.map((room) => buildRoomTile(hotel, room)).join('')}</div>
+
+      <div class="hotel-card__footer">
+        <div>
+          <span class="price__label">Итого за тур</span>
+          <span class="price__value" data-price-for="${hotel.id}">${formatKzt(hotel.total_price_kzt)}</span>
+        </div>
+        <button class="btn-primary btn-book" data-book-hotel="${hotel.id}">Забронировать тур</button>
+      </div>
+    </div>`;
+
+  // Клик по номеру (в т.ч. по кнопке "Выбрать") — выбираем эту категорию.
+  card.querySelectorAll('.room-tile').forEach((tile) => {
+    tile.addEventListener('click', () => selectRoom(hotel.id, tile.dataset.roomId));
+  });
+
+  // Точки мини-галереи переключают фото внутри своей плитки без выбора номера.
+  card.querySelectorAll('.room-tile__dot').forEach((dot) => {
+    dot.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const tile = dot.closest('.room-tile');
+      const images = JSON.parse(tile.dataset.images);
+      const index = Number(dot.dataset.index);
+      tile.querySelector('.room-tile__gallery img').src = images[index];
+      tile.querySelectorAll('.room-tile__dot').forEach((d) => d.classList.toggle('is-active', d === dot));
+    });
+  });
+
+  card.querySelector('.btn-book').addEventListener('click', () => openBookingModal(hotel.id));
+
+  // Первый номер (Standard) выбран по умолчанию.
+  card.querySelector('.room-tile').classList.add('is-selected');
+
+  return card;
+}
+
+function buildRoomTile(hotel, room) {
+  const isVip = room.vip_privileges.length > 0;
+  const priceLabel = room.price_delta_kzt === 0 ? 'Включено в базовую цену' : `+ ${formatKzt(room.price_delta_kzt)}`;
+  return `
+    <div class="room-tile${isVip ? ' is-vip' : ''}" data-room-id="${room.id}" data-images='${JSON.stringify(room.images)}'>
+      <div class="room-tile__gallery">
+        <img src="${room.images[0]}" alt="${room.name}" loading="lazy">
+        <div class="room-tile__dots">
+          ${room.images.map((_, i) => `<button type="button" class="room-tile__dot${i === 0 ? ' is-active' : ''}" data-index="${i}"></button>`).join('')}
+        </div>
+      </div>
+      <p class="room-tile__name">${room.name}</p>
+      <p class="room-tile__meta">${room.sqm} м² · ${room.capacity} · ${room.availability}</p>
+      <ul class="room-tile__list included">${room.amenities_included.slice(0, 3).map((a) => `<li>${a}</li>`).join('')}</ul>
+      ${room.amenities_excluded.length ? `<ul class="room-tile__list excluded">${room.amenities_excluded.map((a) => `<li>${a}</li>`).join('')}</ul>` : ''}
+      ${isVip ? `
+        <div class="room-tile__vip">
+          <span class="room-tile__vip-label">VIP-привилегии</span>
+          <ul>${room.vip_privileges.map((v) => `<li>${v}</li>`).join('')}</ul>
+        </div>` : ''}
+      <p class="room-tile__price">${priceLabel}</p>
+      <button type="button" class="room-tile__select">Выбрать</button>
+    </div>`;
+}
+
+function selectRoom(hotelId, roomId) {
+  const entry = state.cardsById.get(hotelId);
+  entry.selectedRoomId = roomId;
+
+  const card = document.querySelector(`.hotel-card[data-hotel-id="${hotelId}"]`);
+  card.querySelectorAll('.room-tile').forEach((tile) => {
+    tile.classList.toggle('is-selected', tile.dataset.roomId === roomId);
+  });
+
+  // Мгновенный пересчёт итоговой цены под выбранный номер.
+  const room = entry.hotel.room_options.find((r) => r.id === roomId);
+  const newTotal = entry.hotel.total_price_kzt + room.price_delta_kzt;
+  card.querySelector(`[data-price-for="${hotelId}"]`).textContent = formatKzt(newTotal);
+}
+
+function formatKzt(value) {
+  return `${Math.round(value).toLocaleString('ru-RU')} ₸`;
+}
+
+/* ------------------------------ МОДАЛКА БРОНИ --------------------------- */
+
+function openBookingModal(hotelId) {
+  const entry = state.cardsById.get(hotelId);
+  const room = entry.hotel.room_options.find((r) => r.id === entry.selectedRoomId);
+  const total = entry.hotel.total_price_kzt + room.price_delta_kzt;
+
+  el('modalHotelName').textContent = entry.hotel.hotel_name;
+  el('modalRoomName').textContent = room.name;
+  el('modalPrice').textContent = formatKzt(total);
+  el('bookingForm').dataset.hotelId = hotelId;
+
+  el('modalFormStep').hidden = false;
+  el('modalSuccessStep').hidden = true;
+  el('bookingError').textContent = '';
+  el('bookingForm').reset();
+  el('modalBackdrop').hidden = false;
+}
+
+function closeBookingModal() {
+  el('modalBackdrop').hidden = true;
+}
+
+el('modalClose').addEventListener('click', closeBookingModal);
+el('modalBackdrop').addEventListener('click', (event) => {
+  if (event.target === el('modalBackdrop')) closeBookingModal();
+});
+
+// Маска номера WhatsApp: +7 (7XX) XXX-XX-XX, форматируем по мере ввода цифр.
+el('clientWhatsapp').addEventListener('input', (event) => {
+  let digits = event.target.value.replace(/\D/g, '');
+  if (digits.startsWith('8')) digits = '7' + digits.slice(1);
+  if (!digits.startsWith('7')) digits = '7' + digits;
+  digits = digits.slice(0, 11);
+
+  let formatted = '+7';
+  if (digits.length > 1) formatted += ` (${digits.slice(1, 4)}`;
+  if (digits.length >= 4) formatted += ')';
+  if (digits.length > 4) formatted += ` ${digits.slice(4, 7)}`;
+  if (digits.length > 7) formatted += `-${digits.slice(7, 9)}`;
+  if (digits.length > 9) formatted += `-${digits.slice(9, 11)}`;
+  event.target.value = formatted;
+});
+
+el('bookingForm').addEventListener('submit', (event) => {
+  event.preventDefault();
+  const name = el('clientName').value.trim();
+  const phoneDigits = el('clientWhatsapp').value.replace(/\D/g, '');
+
+  if (name.length < 3) {
+    el('bookingError').textContent = 'Укажите ФИО полностью.';
+    return;
+  }
+  if (phoneDigits.length < 11) {
+    el('bookingError').textContent = 'Укажите номер WhatsApp полностью.';
+    return;
+  }
+
+  // MVP: заявка не улетает во внешнюю CRM — здесь имитация отправки,
+  // чтобы демонстрировать полный UX-флоу без подключённого бэкенда лидов.
+  const submitBtn = event.target.querySelector('button[type="submit"]');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Отправляем…';
+  setTimeout(() => {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Отправить заявку';
+    el('modalFormStep').hidden = true;
+    el('modalSuccessStep').hidden = false;
+  }, 600);
+});
+
+loadMeta();
+renderChildrenAgeInputs();
+</script>
+</body>
+</html>

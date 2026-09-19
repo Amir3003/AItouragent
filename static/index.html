@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zari Travel AI | Первое AI-турагентство</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css?v=20260915-4">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="/"><span class="brand-symbol">Z</span><span>Zari Travel <b>AI</b></span></a>
+  </header>
+  <main>
+    <section class="hero-section">
+      <div class="hero-copy"><span class="eyebrow cyan">ТУРИЗМ / 24·7</span><h1>Zari Travel —<br><span>Ваше Первое</span><br>AI-Турагентство</h1><p>AI-консьерж, который работает 24/7, не навязывает отели, точно считает возраст детей и отвечает мгновенно. Опишите мечту о поездке обычными словами.</p><a class="primary-cta" href="#ai-chat-section">Начать подбор <span>→</span></a></div>
+      <div class="hero-stats"><div><strong>24/7</strong><span>на связи</span></div><div><strong>0%</strong><span>предвзятости</span></div><div><strong id="hero-hotels-count">200</strong><span>отелей в базе</span></div></div>
+    </section>
+    <section id="ai-chat-section" class="ai-section">
+      <div class="section-intro"><span class="eyebrow amber">AI-КОНСЬЕРЖ</span><h2>Куда отправимся?</h2><p>Один запрос вместо длинной анкеты. Я пойму контекст, уточню детали и верну пять лучших совпадений.</p></div>
+      <div class="ai-workspace">
+        <div class="chat-panel"><div class="panel-top"><span><i class="status-dot"></i> Zari AI онлайн</span><small>параметры заполняются в реальном времени</small></div><div id="agent-messages" class="agent-messages" aria-live="polite"><div class="agent-message assistant"><div class="bubble">Привет! Расскажите, какой отдых вы ищете: направление, даты, состав семьи и бюджет.</div></div></div><form id="search-form" class="chat-form"><input id="user-input" autocomplete="off" placeholder="Например: Турция для семьи до 1 400 000 ₸" aria-label="Сообщение AI-ассистенту"><button id="send-button" class="send-button" type="submit">Отправить <span>↗</span></button></form><div id="quick-prompts" class="quick-prompts" aria-label="Сезонные сценарии"></div></div>
+        <aside class="logic-panel"><span class="eyebrow cyan">КАК ЭТО РАБОТАЕТ</span><h3>Ваши параметры.<br>Наши решения.</h3><div class="logic-step"><b>01</b><span>Вы говорите, как есть</span></div><div class="logic-step"><b>02</b><span>AI задаёт только нужное</span></div><div class="logic-step"><b>03</b><span>Топ-5 с точным совпадением</span></div><div class="logic-note">Без скрытых комиссий. Без шаблонных подборок.</div><button id="show-results-button" class="results-hint-button hidden" type="button">Показать варианты <span>↓</span></button></aside>
+      </div>
+    </section>
+    <section class="results-section"><div class="results-heading"><div><span class="eyebrow amber">ПОДБОРКА ДЛЯ ВАС</span><h2>Пять точных совпадений</h2></div><span id="results-count" class="result-counter">Жду ваш запрос</span></div><div id="results" class="results-grid"><div class="empty-state"><strong>Подборка появится здесь</strong><p>Отправьте сообщение ассистенту или выберите сценарий ниже.</p></div></div></section>
+  </main>
+
+  <div id="room-detail-modal" class="overlay hidden" role="dialog" aria-modal="true" aria-label="Варианты номеров"><div id="room-detail-content" class="detail-drawer"></div></div>
+  <div id="booking-modal" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="booking-title"><div class="booking-modal"><button id="modal-close" class="close-button" type="button" aria-label="Закрыть">×</button><div id="booking-form-view"><span class="eyebrow amber">ЛИЧНЫЙ КОНСЬЕРЖ</span><h2 id="booking-title">Забронировать тур</h2><p id="booking-summary" class="booking-summary"></p><form id="booking-form"><label>ФИО<input id="guest-name" required placeholder="Анна Петрова"></label><label>WhatsApp номер<input id="guest-phone" required inputmode="tel" placeholder="+7 7XX XXX XX XX"></label><p id="booking-error" class="booking-error hidden"></p><button class="primary-cta full" type="submit">Отправить заявку в WhatsApp <span>↗</span></button></form></div><div id="booking-success" class="booking-success hidden"><div class="success-check">✓</div><h2>Заявка принята</h2><p>Ваш персональный менеджер свяжется с вами в течение 5 минут.</p><button id="success-close" class="secondary-cta" type="button">Закрыть</button></div></div></div>
+  <script src="/static/app.js?v=20260915-2"></script>
+</body>
+</html>
