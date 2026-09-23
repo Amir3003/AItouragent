@@ -1,35 +1,177 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zari Travel AI | Первое AI-турагентство</title>
+  <title>VoyageAI | Autonomous AI Travel Concierge</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/styles.css?v=20260915-4">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css?v=20260923-1">
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="/"><span class="brand-symbol">Z</span><span>Zari Travel <b>AI</b></span></a>
+    <a class="brand" href="/">
+      <span class="brand-symbol">V</span>
+      <span>Voyage<b>AI</b></span>
+    </a>
+    <div class="header-badges">
+      <span class="tag-badge" data-i18n="tag_showcase">Digital Bridge 2026 Showcase</span>
+      <div class="lang-switcher" id="lang-switcher">
+        <button class="lang-btn active" data-lang="EN">EN</button>
+        <button class="lang-btn" data-lang="RU">RU</button>
+      </div>
+      <button id="reset-session-button" class="secondary-cta" type="button" title="Start a fresh travel query">
+        <span>↺</span> <span data-i18n="new_itinerary">New Itinerary</span>
+      </button>
+    </div>
   </header>
+
   <main>
     <section class="hero-section">
-      <div class="hero-copy"><span class="eyebrow cyan">ТУРИЗМ / 24·7</span><h1>Zari Travel —<br><span>Ваше Первое</span><br>AI-Турагентство</h1><p>AI-консьерж, который работает 24/7, не навязывает отели, точно считает возраст детей и отвечает мгновенно. Опишите мечту о поездке обычными словами.</p><a class="primary-cta" href="#ai-chat-section">Начать подбор <span>→</span></a></div>
-      <div class="hero-stats"><div><strong>24/7</strong><span>на связи</span></div><div><strong>0%</strong><span>предвзятости</span></div><div><strong id="hero-hotels-count">200</strong><span>отелей в базе</span></div></div>
-    </section>
-    <section id="ai-chat-section" class="ai-section">
-      <div class="section-intro"><span class="eyebrow amber">AI-КОНСЬЕРЖ</span><h2>Куда отправимся?</h2><p>Один запрос вместо длинной анкеты. Я пойму контекст, уточню детали и верну пять лучших совпадений.</p></div>
-      <div class="ai-workspace">
-        <div class="chat-panel"><div class="panel-top"><span><i class="status-dot"></i> Zari AI онлайн</span><small>параметры заполняются в реальном времени</small></div><div id="agent-messages" class="agent-messages" aria-live="polite"><div class="agent-message assistant"><div class="bubble">Привет! Расскажите, какой отдых вы ищете: направление, даты, состав семьи и бюджет.</div></div></div><form id="search-form" class="chat-form"><input id="user-input" autocomplete="off" placeholder="Например: Турция для семьи до 1 400 000 ₸" aria-label="Сообщение AI-ассистенту"><button id="send-button" class="send-button" type="submit">Отправить <span>↗</span></button></form><div id="quick-prompts" class="quick-prompts" aria-label="Сезонные сценарии"></div></div>
-        <aside class="logic-panel"><span class="eyebrow cyan">КАК ЭТО РАБОТАЕТ</span><h3>Ваши параметры.<br>Наши решения.</h3><div class="logic-step"><b>01</b><span>Вы говорите, как есть</span></div><div class="logic-step"><b>02</b><span>AI задаёт только нужное</span></div><div class="logic-step"><b>03</b><span>Топ-5 с точным совпадением</span></div><div class="logic-note">Без скрытых комиссий. Без шаблонных подборок.</div><button id="show-results-button" class="results-hint-button hidden" type="button">Показать варианты <span>↓</span></button></aside>
+      <div class="hero-copy">
+        <span class="eyebrow cyan" data-i18n="hero_eyebrow">AUTONOMOUS LUXURY TRAVEL · 24/7 CONCIERGE</span>
+        <h1 data-i18n="hero_title">VoyageAI —<br><span>Your Autonomous</span><br>Travel Concierge</h1>
+        <p data-i18n="hero_desc">Bespoke itinerary curation powered by Google Gemini. Direct roundtrip flights, handpicked 5-star suites, and transparent pricing in USD & KZT with zero commission markups.</p>
+        <a class="primary-cta" href="#ai-chat-section"><span data-i18n="hero_cta">Start Curation</span> <span>→</span></a>
+      </div>
+      <div class="hero-stats">
+        <div><strong>24/7</strong><span data-i18n="stat_concierge">Autonomous Concierge</span></div>
+        <div><strong>50</strong><span data-i18n="stat_resorts">Elite World Resorts</span></div>
+        <div><strong>10</strong><span data-i18n="stat_destinations">Top Global Destinations</span></div>
+        <div><strong>0%</strong><span data-i18n="stat_commission">Hidden Commission</span></div>
       </div>
     </section>
-    <section class="results-section"><div class="results-heading"><div><span class="eyebrow amber">ПОДБОРКА ДЛЯ ВАС</span><h2>Пять точных совпадений</h2></div><span id="results-count" class="result-counter">Жду ваш запрос</span></div><div id="results" class="results-grid"><div class="empty-state"><strong>Подборка появится здесь</strong><p>Отправьте сообщение ассистенту или выберите сценарий ниже.</p></div></div></section>
+
+    <section id="ai-chat-section" class="ai-section">
+      <div class="section-intro">
+        <span class="eyebrow amber" data-i18n="section_intro_eyebrow">VOYAGEAI CONCIERGE</span>
+        <h2 data-i18n="section_intro_title">Where shall we take you?</h2>
+        <p data-i18n="section_intro_desc">A single conversational prompt replaces tedious multi-step search engines. VoyageAI interprets your travel style, selects non-stop flight routes, and matches real suites.</p>
+      </div>
+
+      <div class="ai-workspace">
+        <div class="chat-panel">
+          <div class="panel-top">
+            <span><i class="status-dot"></i> <span data-i18n="panel_status">VoyageAI Active · Real-time Parameter Extraction</span></span>
+            <small data-i18n="panel_sub">Natural Language Parsing</small>
+          </div>
+          <div id="agent-messages" class="agent-messages" aria-live="polite">
+            <div class="agent-message assistant">
+              <div class="bubble" data-i18n="welcome_msg">
+                Welcome to VoyageAI! I am your autonomous travel concierge. Where would you like to travel, for how many nights, and what is your preferred budget and party size?
+              </div>
+            </div>
+          </div>
+          <!-- Demo Quick-Launch Chips -->
+          <div class="demo-chips" id="demo-chips">
+            <button class="demo-chip" type="button" data-i18n-chip="chip_dubai"
+              data-query-ru="Соло-поездка в Дубай из Астаны с 20 октября на 5 ночей, 1 взрослый, бюджет $2 500"
+              data-query-en="Solo luxury trip to Dubai from Astana departing Oct 20 for 5 nights: 1 adult, $2,500 budget">
+              🏙️ Solo trip to Dubai, 5 nights
+            </button>
+            <button class="demo-chip" type="button" data-i18n-chip="chip_antalya"
+              data-query-ru="Семейный отдых в Анталье из Астаны с 14 октября на 7 ночей: 2 взрослых, 1 ребёнок (6 лет), бюджет $2 800"
+              data-query-en="Family holiday in Antalya from Astana departing Oct 14 for 7 nights: 2 adults, 1 child (age 6), $2,800 budget">
+              🌴 Family holiday in Antalya, 7 nights
+            </button>
+            <button class="demo-chip" type="button" data-i18n-chip="chip_phuket"
+              data-query-ru="Отдых на Пхукете из Алматы с 10 ноября на 8 ночей: 2 взрослых, бюджет 1 800 000 ₸"
+              data-query-en="Phuket vacation from Almaty departing Nov 10 for 8 nights: 2 adults, $2,200 budget">
+              🏖️ Phuket vacation, 8 nights
+            </button>
+          </div>
+
+          <form id="search-form" class="chat-form">
+            <input id="user-input" autocomplete="off" placeholder="e.g. Solo luxury escape to Dubai from Astana for 7 nights, 5★, $3,500 budget" data-i18n-placeholder="input_placeholder" aria-label="Message VoyageAI Concierge">
+            <button id="send-button" class="send-button" type="submit" data-i18n="send_btn">Send <span>↗</span></button>
+          </form>
+        </div>
+
+        <aside class="logic-panel">
+          <span class="eyebrow cyan" data-i18n="how_label">HOW IT WORKS</span>
+          <h3 data-i18n="how_title">Your Vision.<br>Our Autonomous Engine.</h3>
+          <div class="logic-step">
+            <b>01</b>
+            <span data-i18n="how_step1">State your vision in natural conversational language</span>
+          </div>
+          <div class="logic-step">
+            <b>02</b>
+            <span data-i18n="how_step2">VoyageAI extracts dates, direct flights &amp; suite tiers</span>
+          </div>
+          <div class="logic-step">
+            <b>03</b>
+            <span data-i18n="how_step3">Receive Top 5 curated vacation packages with flight tickets</span>
+          </div>
+          <div class="logic-note" data-i18n="how_note">
+            Synchronized with live scheduled airline routes &amp; verified resort suites.
+          </div>
+          <button id="show-results-button" class="results-hint-button" type="button">
+            <span data-i18n="how_cta">View Curated Packages</span> <span>↓</span>
+          </button>
+        </aside>
+      </div>
+    </section>
+
+    <section class="results-section">
+      <div class="results-heading">
+        <div>
+          <span class="eyebrow amber" data-i18n="bespoke_label">BESPOKE SELECTION</span>
+          <h2 data-i18n="top5_heading">Top 5 Tailored Packages</h2>
+        </div>
+        <span id="results-count" class="result-counter" data-i18n-default="awaiting">Awaiting your request</span>
+      </div>
+
+      <!-- Simulated Flight Summary Ticket -->
+      <div id="flight-summary-container"></div>
+
+      <!-- Hotel Cards Grid -->
+      <div id="results" class="results-grid">
+        <div class="empty-state">
+          <strong data-i18n="empty_heading">Your bespoke matches will appear here</strong>
+          <p data-i18n="empty_sub">Send a message to VoyageAI above or select one of the sample itineraries.</p>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <div id="room-detail-modal" class="overlay hidden" role="dialog" aria-modal="true" aria-label="Варианты номеров"><div id="room-detail-content" class="detail-drawer"></div></div>
-  <div id="booking-modal" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="booking-title"><div class="booking-modal"><button id="modal-close" class="close-button" type="button" aria-label="Закрыть">×</button><div id="booking-form-view"><span class="eyebrow amber">ЛИЧНЫЙ КОНСЬЕРЖ</span><h2 id="booking-title">Забронировать тур</h2><p id="booking-summary" class="booking-summary"></p><form id="booking-form"><label>ФИО<input id="guest-name" required placeholder="Анна Петрова"></label><label>WhatsApp номер<input id="guest-phone" required inputmode="tel" placeholder="+7 7XX XXX XX XX"></label><p id="booking-error" class="booking-error hidden"></p><button class="primary-cta full" type="submit">Отправить заявку в WhatsApp <span>↗</span></button></form></div><div id="booking-success" class="booking-success hidden"><div class="success-check">✓</div><h2>Заявка принята</h2><p>Ваш персональный менеджер свяжется с вами в течение 5 минут.</p><button id="success-close" class="secondary-cta" type="button">Закрыть</button></div></div></div>
-  <script src="/static/app.js?v=20260915-2"></script>
+  <!-- Hotel & Suite Details Modal -->
+  <div id="hotel-modal" class="overlay hidden" role="dialog" aria-modal="true" aria-label="Hotel Details">
+    <div id="hotel-modal-content" class="detail-drawer modal-content modal-card"></div>
+  </div>
+
+  <!-- VIP Booking Modal -->
+  <div id="booking-modal" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="booking-title">
+    <div class="booking-modal">
+      <button id="modal-close" class="close-button" type="button" aria-label="Close">×</button>
+      <div id="booking-form-view">
+        <span class="eyebrow amber" data-i18n="booking_eyebrow">VOYAGEAI VIP RESERVATION</span>
+        <h2 id="booking-title" style="margin-top:6px" data-i18n="booking_title">Confirm Itinerary</h2>
+        <div id="booking-summary" class="booking-summary"></div>
+        <form id="booking-form">
+          <label>
+            <span data-i18n="booking_label_name">Primary Guest Full Name</span>
+            <input id="guest-name" required placeholder="Alexander Vance" data-i18n-placeholder="booking_name_placeholder">
+          </label>
+          <label>
+            <span data-i18n="booking_label_phone">WhatsApp / Mobile Phone (with country code)</span>
+            <input id="guest-phone" required inputmode="tel" placeholder="+7 777 123 45 67">
+          </label>
+          <p id="booking-error" class="booking-error hidden" style="color:#f87171;font-size:0.8rem"></p>
+          <button class="primary-cta full" type="submit" style="width:100%;justify-content:center;margin-top:8px">
+            <span data-i18n="booking_cta">Confirm Reservation with Concierge</span> <span>↗</span>
+          </button>
+        </form>
+      </div>
+      <div id="booking-success" class="booking-success hidden">
+        <div class="success-check">✓</div>
+        <h2 data-i18n="booking_success_title">Reservation Request Received</h2>
+        <p style="color:var(--muted-light);margin:12px 0 20px" data-i18n="booking_success_desc">Your dedicated VoyageAI Concierge Officer will contact you within 5 minutes via WhatsApp to finalize your luxury flight and suite booking.</p>
+        <button id="success-close" class="secondary-cta" type="button" data-i18n="booking_success_close">Close Window</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js?v=20260923-5"></script>
 </body>
 </html>

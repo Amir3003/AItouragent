@@ -1,14 +1,4 @@
-"""SQLite-хранилище каталога отелей Zari Travel.
-
-Важно: initialize_database() всегда полностью пересобирает таблицу из
-переданных Python-моделей (DROP + INSERT). Раньше здесь была ветка,
-которая при непустой таблице лишь обновляла room_options_json у совпавших
-по имени строк и ничего не делала с остальными полями — из-за этого старые
-записи (в том числе дубли-"варианты") накапливались в zari_travel.db и не
-исчезали даже после исправления генератора данных в hotel_search.py.
-Полный пересбор при каждом старте устраняет этот класс багов: код и файл
-БД больше не могут расходиться.
-"""
+"""SQLite storage for VoyageAI: Autonomous Travel Concierge catalog."""
 
 import json
 import sqlite3
@@ -27,6 +17,7 @@ CREATE TABLE IF NOT EXISTS hotels (
     country TEXT NOT NULL,
     country_city TEXT NOT NULL,
     image_url TEXT NOT NULL,
+    gallery_images_json TEXT NOT NULL DEFAULT '[]',
     stars INTEGER NOT NULL CHECK (stars BETWEEN 3 AND 5),
     meal_type TEXT NOT NULL,
     package_price_kzt INTEGER NOT NULL CHECK (package_price_kzt > 0),
@@ -51,45 +42,46 @@ CREATE_INDEXES = [
 
 
 def _connection() -> sqlite3.Connection:
-    """Открывает SQLite-соединение с доступом к строкам по именам полей."""
-
+    """Opens SQLite connection with row factory for column-name access."""
     connection = sqlite3.connect(DATABASE_PATH)
     connection.row_factory = sqlite3.Row
     return connection
 
 
 def reset_database() -> None:
-    """Удаляет локальный файл БД, чтобы гарантировать чистый пересбор."""
-
+    """Removes local DB file to ensure clean database rebuild."""
     if not DATABASE_PATH.exists():
         return
-
     try:
         DATABASE_PATH.unlink()
     except PermissionError:
-        # В Windows процесс может держать БД открытой во время повторного старта
-        # dev-сервера. В таком случае безопаснее не падать, а оставить текущую
-        # БД и повторно инициализировать таблицу на уровне SQL ниже.
+        # On Windows, keep existing file and let SQL tables recreate
         return
 
 
 def initialize_database(hotels: Iterable[Any]) -> None:
-    """Создает таблицу и полностью заполняет ее каталогом из Python-моделей."""
-
+    """Creates tables and populates with verified VoyageAI catalog."""
     hotels = list(hotels)
     with _connection() as connection:
         connection.execute(CREATE_HOTELS_TABLE)
+        connection.execute("""
+            CREATE TABLE IF NOT EXISTS sessions (
+                session_id TEXT PRIMARY KEY,
+                data TEXT,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
         for statement in CREATE_INDEXES:
             connection.execute(statement)
         connection.execute("DELETE FROM hotels")
         connection.executemany(
             """
             INSERT INTO hotels (
-                hotel_id, hotel_name, country, country_city, image_url, stars,
-                meal_type, package_price_kzt, rating, reviews_count,
+                hotel_id, hotel_name, country, country_city, image_url, gallery_images_json,
+                stars, meal_type, package_price_kzt, rating, reviews_count,
                 seats_flight, seats_hotel, amenities_json, pros_json, cons_json,
                 departure_cities_json, max_guests, summary, room_options_json
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             [
                 (
@@ -98,21 +90,22 @@ def initialize_database(hotels: Iterable[Any]) -> None:
                     hotel.country,
                     hotel.country_city,
                     hotel.image_url,
+                    json.dumps(getattr(hotel, "gallery_images", [hotel.image_url]), ensure_ascii=False),
                     hotel.stars,
-                    hotel.meal_type.value,
+                    hotel.meal_type.value if hasattr(hotel.meal_type, "value") else str(hotel.meal_type),
                     hotel.package_price_kzt,
                     hotel.rating,
                     hotel.reviews_count,
                     hotel.seats_flight,
                     hotel.seats_hotel,
-                    json.dumps([item.value for item in hotel.amenities], ensure_ascii=False),
+                    json.dumps([item.value if hasattr(item, "value") else str(item) for item in hotel.amenities], ensure_ascii=False),
                     json.dumps(hotel.pros, ensure_ascii=False),
                     json.dumps(hotel.cons, ensure_ascii=False),
                     json.dumps(hotel.departure_cities, ensure_ascii=False),
                     hotel.max_guests,
                     hotel.summary,
                     json.dumps(
-                        [room.model_dump(mode="json") for room in hotel.room_options],
+                        [room.model_dump(mode="json") if hasattr(room, "model_dump") else room for room in hotel.room_options],
                         ensure_ascii=False,
                     ),
                 )
@@ -122,51 +115,54 @@ def initialize_database(hotels: Iterable[Any]) -> None:
 
 
 def count_hotels() -> int:
-    """Возвращает количество записей в каталоге."""
-
+    """Returns total number of properties in the catalog."""
     with _connection() as connection:
         return connection.execute("SELECT COUNT(*) FROM hotels").fetchone()[0]
 
 
 def countries_counts() -> dict[str, int]:
-    """Возвращает распределение отелей по странам (для проверки на дубли)."""
-
+    """Returns distribution of properties across destinations."""
     with _connection() as connection:
         rows = connection.execute(
-            "SELECT country, COUNT(*) count FROM hotels GROUP BY country ORDER BY country"
+            "SELECT country, COUNT(*) as count FROM hotels GROUP BY country ORDER BY country"
         ).fetchall()
     return {row["country"]: row["count"] for row in rows}
 
 
 def search_database(request: Any) -> List[sqlite3.Row]:
-    """Фильтрует каталог SQL-запросом по параметрам пользователя."""
-
+    """Filters catalog via SQL according to travel parameters."""
     conditions = [
-        "EXISTS (SELECT 1 FROM json_each(h.departure_cities_json) WHERE value = ?)",
+        "(EXISTS (SELECT 1 FROM json_each(h.departure_cities_json) WHERE LOWER(value) = LOWER(?)) OR ? = '' OR ? IS NULL)",
         "ROUND(h.package_price_kzt * ? / 7.0) <= ?",
         "? <= h.max_guests",
     ]
+    city = request.city_from or ""
     parameters: list[Any] = [
-        request.city_from,
+        city,
+        city,
+        city,
         request.nights,
         request.budget_kzt,
         request.adults + request.children,
     ]
 
     if request.country:
-        conditions.append("h.country = ?")
+        conditions.append("(LOWER(h.country) = LOWER(?) OR LOWER(h.country_city) LIKE LOWER(?))")
         parameters.append(request.country)
+        parameters.append(f"%{request.country}%")
     if request.stars is not None:
         conditions.append("h.stars >= ?")
         parameters.append(request.stars)
     if request.meal_type is not None:
+        meal_val = request.meal_type.value if hasattr(request.meal_type, "value") else str(request.meal_type)
         conditions.append("h.meal_type = ?")
-        parameters.append(request.meal_type.value)
+        parameters.append(meal_val)
     for amenity in request.amenities:
+        amenity_val = amenity.value if hasattr(amenity, "value") else str(amenity)
         conditions.append(
-            "EXISTS (SELECT 1 FROM json_each(h.amenities_json) WHERE value = ?)"
+            "EXISTS (SELECT 1 FROM json_each(h.amenities_json) WHERE LOWER(value) = LOWER(?))"
         )
-        parameters.append(amenity.value)
+        parameters.append(amenity_val)
 
     query = f"""
         SELECT h.*, ROUND(h.package_price_kzt * ? / 7.0) AS total_price_kzt
