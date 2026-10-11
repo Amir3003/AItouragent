@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 import re
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta
-from typing import Any
+from typing import Any, ClassVar
 
 try:
     from openai import AsyncOpenAI
@@ -24,12 +25,12 @@ from hotel_search import (
 )
 
 GREETING_MESSAGE = (
-    "Welcome to VoyageAI! I am your autonomous travel concierge. "
+    "Welcome to Zari Travel! I am your autonomous travel concierge. "
     "Where would you like to travel, for how many nights, and what is your target budget and party size?"
 )
 
 SYSTEM_PROMPT = """
-You are VoyageAI, an elite multilingual autonomous AI travel concierge for international travelers.
+You are Zari Travel, an elite multilingual autonomous AI travel concierge for international travelers.
 LANGUAGE RULE: Detect the language of the user's message. If the user writes in Russian, reply in Russian. If in English, reply in English. Always keep JSON keys and slot values in English/canonical format regardless of reply language.
 
 Your objective is to extract vacation parameters and converse in a refined, hospitable tone.
@@ -206,6 +207,7 @@ MEAL_ALIASES = {
     "all inclusive": "AI - All Inclusive", "все включено": "AI - All Inclusive", "ai": "AI - All Inclusive",
     "ultra all inclusive": "UAI - Ultra All Inclusive", "ультра все включено": "UAI - Ultra All Inclusive", "uai": "UAI - Ultra All Inclusive",
     "full board": "FB - Full Board", "полный пансион": "FB - Full Board", "fb": "FB - Full Board",
+    "half board": "HB - Half Board", "полупансион": "HB - Half Board", "завтрак и ужин": "HB - Half Board", "hb": "HB - Half Board",
     "breakfast": "BB - Bed & Breakfast", "bed and breakfast": "BB - Bed & Breakfast", "завтраки": "BB - Bed & Breakfast", "bb": "BB - Bed & Breakfast",
 }
 
@@ -290,8 +292,7 @@ def _extract_date(text: str) -> str | None:
             return f"{year:04d}-{month:02d}-{day:02d}"
 
     # 3. RU/EN: day + month name, e.g. '14 октября', '14 окт', '14th October'
-    dm_m = re.search(r"(?:^|[^\wа-яёА-ЯЁ])(\d{1,2})\s*(?:-?го|-?ое|st|nd|rd|th)?\s+(?:of\s+)?([а-яёa-z]+)(?:\s+(\d{4}))?", low)
-    if dm_m:
+    for dm_m in re.finditer(r"(?:^|[^\wа-яёА-ЯЁ])(\d{1,2})\s*(?:-?го|-?ое|st|nd|rd|th)?\s+(?:of\s+)?([а-яёa-z]+)(?:\s+(\d{4}))?", low):
         day = int(dm_m.group(1))
         m_num = _parse_month_str(dm_m.group(2))
         if m_num and 1 <= day <= 31:
@@ -299,8 +300,7 @@ def _extract_date(text: str) -> str | None:
             return f"{year:04d}-{m_num:02d}-{day:02d}"
 
     # 4. EN: month name + day, e.g. 'Oct 14', 'October 14th', 'departing Oct 14'
-    md_m = re.search(r"\b([a-z]+)\s+(\d{1,2})(?:st|nd|rd|th)?(?:\s+(\d{4}))?", low)
-    if md_m:
+    for md_m in re.finditer(r"\b([a-z]+)\s+(\d{1,2})(?:st|nd|rd|th)?(?:\s+(\d{4}))?", low):
         m_num = _parse_month_str(md_m.group(1))
         day = int(md_m.group(2))
         if m_num and 1 <= day <= 31:
@@ -308,8 +308,7 @@ def _extract_date(text: str) -> str | None:
             return f"{year:04d}-{m_num:02d}-{day:02d}"
 
     # 5. Month only: 'в октябре', 'на ноябрь', 'in October'
-    mon_only_m = re.search(r"(?:в|во|на|in)\s+([а-яёa-z]+)\b", low)
-    if mon_only_m:
+    for mon_only_m in re.finditer(r"(?:в|во|на|in)\s+([а-яёa-z]+)\b", low):
         m_num = _parse_month_str(mon_only_m.group(1))
         if m_num:
             return f"{default_year:04d}-{m_num:02d}-15"
@@ -363,21 +362,25 @@ def _extract_country(text: str) -> str | None:
 
 
 def _extract_budget(text: str) -> int | None:
-    # 1. USD: $2 800, $2800, 2800$, 2800 usd, 2800 долларов, 2.8k $
-    usd_m = re.search(r"\$\s*(\d[\d\s,]*\.?\d*)|(\d[\d\s,]*\.?\d*)\s*(?:\$|usd|dollars?|долларов?|долл?|bucks?)", text, flags=re.IGNORECASE)
+    # 1. USD: $2 800, $2800, 2800$, 2800 usd, 2800 долларов, 2.5k $
+    usd_m = re.search(
+        r"\$\s*(\d[\d\s,]*\.?\d*)|([\d\s,]*\.?\d+)\s*(?:\$|usd|dollars?|долларов?|долл?|bucks?)",
+        text, flags=re.IGNORECASE,
+    )
     if usd_m:
-        raw = usd_m.group(1) or usd_m.group(2)
-        if raw:
-            clean = raw.replace(" ", "").replace(",", "")
-            try:
-                val = float(clean)
-                if val > 0:
-                    return int(val * USD_TO_KZT)
-            except ValueError:
-                pass
+        raw = (usd_m.group(1) or usd_m.group(2) or "").replace(" ", "").replace(",", "")
+        try:
+            val = float(raw)
+            if val > 0:
+                return int(val * USD_TO_KZT)
+        except ValueError:
+            pass
 
-    # 2. Millions: 2 млн, 2.5 млн тенге, 2 000 000 тенге
-    mln_m = re.search(r"(\d+(?:[.,]\d+)?)\s*(?:млн|миллион(?:а|ов)?)\s*(?:тенге|т|₸|kzt)?", text, flags=re.IGNORECASE)
+    # 2. Millions: "2 млн", "2.5 млн тг", "2 миллиона", "2m", "2mln", "2000000"
+    mln_m = re.search(
+        r"([\d]+(?:[.,]\d+)?)\s*(?:млн|миллион(?:а|ов)?|mln|million|m)\s*(?:тенге|т|₸|тг|kzt)?",
+        text, flags=re.IGNORECASE,
+    )
     if mln_m:
         clean = mln_m.group(1).replace(",", ".")
         try:
@@ -385,8 +388,22 @@ def _extract_budget(text: str) -> int | None:
         except ValueError:
             pass
 
-    # 3. KZT: 2 000 000 ₸, 1500000 тенге
-    kzt_m = re.search(r"(\d[\d\s,]{4,})\s*(?:₸|kzt|т|тенге)", text, flags=re.IGNORECASE)
+    # 3. Thousands shortcut: "500к", "800 тыс", "500k"
+    k_m = re.search(
+        r"([\d]+(?:[.,]\d+)?)\s*(?:тыс(?:яч)?\.?|к|k)\s*(?:тенге|т|₸|тг|kzt)?",
+        text, flags=re.IGNORECASE,
+    )
+    if k_m:
+        clean = k_m.group(1).replace(",", ".")
+        try:
+            val = float(clean) * 1000
+            if val >= 50000:
+                return int(val)
+        except ValueError:
+            pass
+
+    # 4. KZT large number: "2 000 000 ₸", "1500000 тенге", "2 000 000 тг"
+    kzt_m = re.search(r"(\d[\d\s,]{4,})\s*(?:₸|kzt|т|тенге|тг)", text, flags=re.IGNORECASE)
     if kzt_m:
         clean = kzt_m.group(1).replace(" ", "").replace(",", "")
         try:
@@ -394,8 +411,8 @@ def _extract_budget(text: str) -> int | None:
         except ValueError:
             pass
 
-    # 4. "бюджет 2 000 000" / "до 1 500 000"
-    pre_m = re.search(r"(?:до|бюджет|под\s+ключ)[^\d]*(\d[\d\s,]{4,})", text, flags=re.IGNORECASE)
+    # 5. "бюджет 2 000 000" / "до 1 500 000"
+    pre_m = re.search(r"(?:до|бюджет|под\s+ключ)[^\d]*([\d\s,]{5,})", text, flags=re.IGNORECASE)
     if pre_m:
         clean = pre_m.group(1).replace(" ", "").replace(",", "")
         try:
@@ -405,7 +422,7 @@ def _extract_budget(text: str) -> int | None:
         except ValueError:
             pass
 
-    # 5. Plain large number >= 100_000
+    # 6. Plain large number >= 100_000 (no currency mentioned)
     for cand in re.findall(r"\b\d[\d\s]{5,}\b", text):
         clean = cand.replace(" ", "")
         if clean.isdigit() and int(clean) >= 100000:
@@ -415,13 +432,44 @@ def _extract_budget(text: str) -> int | None:
 
 
 def _extract_nights(text: str) -> int | None:
+    # 1. Explicit nights / days word match: "7 ночей", "10 nights", "14 days"
     match = re.search(r"(\d+)\s*(?:nights?|days?|ноч(?:ей|ь|и|а)?|дней|дня)", text, flags=re.IGNORECASE)
     if match:
         return int(match.group(1))
-    word_map = {"one": 1, "two": 2, "three": 3, "seven": 7, "eight": 8, "ten": 10, "семь": 7, "восемь": 8, "десять": 10}
+
+    # 2. Week patterns: "2 недели", "1 week", "на неделю", "две недели"
+    if re.search(r"\b(?:2\s*weeks?|две\s+недели|двух\s+недель|на\s+две\s+недели)\b", text, flags=re.IGNORECASE):
+        return 14
+    if re.search(r"\b(?:3\s*weeks?|три\s+недели|трех\s+недель|на\s+три\s+недели)\b", text, flags=re.IGNORECASE):
+        return 21
+    if re.search(r"\b(?:1\s*weeks?|a\s+week|one\s+week|недел[юяе]|одн[ау]\s+недел[юяе]|на\s+недел[юяе]|на\s+одну\s+неделю)\b", text, flags=re.IGNORECASE):
+        return 7
+    w_m = re.search(r"(\d+)\s*(?:weeks?|недел[иьея])", text, flags=re.IGNORECASE)
+    if w_m:
+        return int(w_m.group(1)) * 7
+
+    # 3. Word map: "seven nights", "семь ночей"
+    word_map = {
+        "one": 1, "two": 2, "three": 3, "four": 4, "five": 5, "six": 6,
+        "seven": 7, "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12, "fourteen": 14,
+        "семь": 7, "восемь": 8, "девять": 9, "десять": 10, "четырнадцать": 14,
+    }
     for w, n in word_map.items():
         if re.search(rf"\b{w}\s+(?:nights?|ноч)", text, flags=re.IGNORECASE):
             return n
+    # 3. Pure digit reply (user answered just a number, e.g. "9" or "  9  ")
+    stripped = text.strip()
+    if re.fullmatch(r"\d{1,2}", stripped):
+        val = int(stripped)
+        if 1 <= val <= 60:
+            return val
+    # 4. Digits at start/end with no other context — "9 ночей" already caught above,
+    #    but catch "9." or "9!" just in case
+    digit_only = re.fullmatch(r"(\d{1,2})[.!?]?", stripped)
+    if digit_only:
+        val = int(digit_only.group(1))
+        if 1 <= val <= 60:
+            return val
     return None
 
 
@@ -570,11 +618,13 @@ async def _llm_extract(message: str, history: list[dict[str, Any]] | None = None
         messages = [{"role": "system", "content": SYSTEM_PROMPT}, *conversation]
         for model_name in ACTIVE_MODELS:
             try:
-                response = await client.chat.completions.create(
-                    model=model_name,
-                    messages=messages,
-                    temperature=0.1,
-                    timeout=10,
+                response = await asyncio.wait_for(
+                    client.chat.completions.create(
+                        model=model_name,
+                        messages=messages,
+                        temperature=0.1,
+                    ),
+                    timeout=4.5,
                 )
                 raw_text = response.choices[0].message.content or ""
                 parsed = clean_json_response(raw_text)
@@ -714,27 +764,67 @@ class TravelAgentSession:
         else:
             is_russian = bool(re.search(r'[а-яёА-ЯЁ]', message))
 
-        # Destination guardrail: refuse unsupported routes immediately
+        # ── Destination guardrail: personalized refusal for unsupported routes ───
         if self.context.country and self.context.country not in VALID_DESTINATIONS:
             unsupported = self.context.country
             self.context.country = None  # reset so user can try again
             if is_russian:
                 refusal = (
-                    f"К сожалению, VoyageAI пока не поддерживает прямые рейсы в «{unsupported}» из Казахстана. "
-                    f"Мы работаем с проверенными маршрутами в: Турцию, ОАЭ, Таиланд, Египет, Вьетнам, Мальдивы, Бали (Индонезия), Грузию, Шри-Ланку и Испанию. "
-                    f"Пожалуйста, выберите одно из этих направлений."
+                    f"По направлению «{unsupported}» у нас пока нет доступных пакетных туров: "
+                    f"платформа Zari Travel сейчас работает в режиме открытого бета-тестирования. "
+                    f"На данный момент мы полностью синхронизированы с рейсами по топовым направлениям:\n\n"
+                    f"• Турция (Анталья, Белек, Бодрум)\n"
+                    f"• ОАЭ (Дубай)\n"
+                    f"• Таиланд (Пхукет)\n"
+                    f"• Мальдивы\n"
+                    f"• Египет (Шарм-эль-Шейх)\n\n"
+                    f"Какое из этих направлений рассмотрим для вашего отдыха?"
                 )
             else:
                 refusal = (
-                    f"VoyageAI currently operates verified direct flight routes from Kazakhstan (NQZ/ALA) to: "
-                    f"Turkey, UAE, Thailand, Egypt, Vietnam, Maldives, Bali (Indonesia), Georgia, Sri Lanka, and Spain. "
-                    f"«{unsupported}» is not yet in our verified network. Please choose one of our supported destinations for guaranteed real-time rates."
+                    f"We currently don't have package tours to «{unsupported}». "
+                    f"Zari Travel is in open beta and we're expanding fast! "
+                    f"Right now we're fully synchronized with direct flights to:\n\n"
+                    f"• Turkey (Antalya, Belek, Bodrum)\n"
+                    f"• UAE (Dubai)\n"
+                    f"• Thailand (Phuket)\n"
+                    f"• Maldives\n"
+                    f"• Egypt (Sharm El Sheikh)\n\n"
+                    f"Which of these destinations would you like to explore?"
                 )
             return {
                 "reply": refusal,
                 "state": "INCOMPLETE",
                 "status": "INCOMPLETE",
                 "missing_fields": ["country"],
+                "results": [],
+                "prompts": build_seasonal_prompts(is_russian=is_russian),
+                "slots": self.context.dict,
+            }
+
+        # ── Child age clarification prompt (before final search) ──────────────────
+        if (
+            self.context.children > 0
+            and len(self.context.children_ages) < self.context.children
+            and self.context.country
+            and self.context.nights
+            and self.context.budget_kzt
+        ):
+            if is_russian:
+                age_q = (
+                    f"Уточните, пожалуйста, возраст {'ребёнка' if self.context.children == 1 else 'каждого ребёнка'} "
+                    f"(например, 6 лет)? Это нужно для точного расчёта тарифа на авиабилеты и спального места в номере."
+                )
+            else:
+                age_q = (
+                    f"Could you please tell me the age of your {'child' if self.context.children == 1 else 'children'} "
+                    f"(e.g. 6 years old)? This helps calculate the exact flight fare and room configuration."
+                )
+            return {
+                "reply": age_q,
+                "state": "INCOMPLETE",
+                "status": "INCOMPLETE",
+                "missing_fields": ["children_ages"],
                 "results": [],
                 "prompts": build_seasonal_prompts(is_russian=is_russian),
                 "slots": self.context.dict,
@@ -752,8 +842,56 @@ class TravelAgentSession:
                 "slots": self.context.dict,
             }
 
+        # ── Budget reality check: warn if budget is below destination minimum ─────
+        budget_reality = self._check_budget_reality(is_russian=is_russian)
+        if budget_reality:
+            return budget_reality
+
         request = self.context.to_search_request()
         recommendations = curate_top_five(mock_search_tourvisor_api(request), request)
+        if not recommendations:
+            unconstrained = mock_search_tourvisor_api(request.model_copy(update={"budget_kzt": 100_000_000, "stars": None, "meal_type": None}))
+            min_price = min((h.total_price_kzt for h in unconstrained), default=0) if unconstrained else 0
+            if min_price and request.budget_kzt and request.budget_kzt < min_price:
+                country_name = request.country or "выбранном направлении"
+                min_usd = round(min_price / USD_TO_KZT)
+                user_usd = round(request.budget_kzt / USD_TO_KZT)
+                if is_russian:
+                    msg = (
+                        f"В направлении {country_name} на {request.nights} ночей нет 5★ пакетов в рамках бюджета до {request.budget_kzt:,} ₸ (~${user_usd:,}). "
+                        f"Минимальная стоимость полного пакета с перелётом начинается от {min_price:,} ₸ (~${min_usd:,}). "
+                        f"Мы можем рассмотреть отели 4★, альтернативные даты или другие направления (например, Турция или Египет). Как поступим?"
+                    )
+                    prompts = [
+                        f"Подобрать альтернативу до {request.budget_kzt:,} ₸",
+                        f"Показать {country_name} от {min_price:,} ₸",
+                    ]
+                else:
+                    msg = (
+                        f"Unfortunately, there are no available 5★ packages in {country_name} for your dates ({request.nights} nights) within {request.budget_kzt:,} ₸ (~${user_usd:,}). "
+                        f"Minimum prices with direct flights start from {min_price:,} ₸ (~${min_usd:,}). "
+                        f"We can explore 4★ properties, alternative dates, or other destinations (such as Turkey or Egypt). How would you like to proceed?"
+                    )
+                    prompts = [
+                        f"Find alternatives within ${user_usd:,}",
+                        f"Show {country_name} from ${min_usd:,}",
+                    ]
+                return {
+                    "reply": msg,
+                    "state": "BUDGET_MISMATCH",
+                    "status": "INCOMPLETE",
+                    "missing_fields": [],
+                    "results": [],
+                    "prompts": prompts,
+                    "slots": self.context.dict,
+                    "budget_mismatch": {
+                        "country": country_name,
+                        "user_budget_kzt": request.budget_kzt,
+                        "min_budget_kzt": min_price,
+                        "min_budget_usd": min_usd,
+                    },
+                }
+
         return {
             "reply": self._build_summary(request, recommendations, is_russian=is_russian),
             "state": "COMPLETE",
@@ -764,6 +902,82 @@ class TravelAgentSession:
             "slots": self.context.dict,
             "flight": recommendations[0].flight.model_dump(mode="json") if recommendations and recommendations[0].flight else None,
         }
+
+    # Minimum package price thresholds (per week) for budget reality checks (KZT)
+    # Must be ClassVar so @dataclass doesn't treat it as an instance field.
+    _DESTINATION_MIN_BUDGET: ClassVar[dict[str, tuple[int, str, str]]] = {
+        # country: (min_kzt, friendly_country_ru, friendly_country_en)
+        "Maldives":  (2_300_000, "Мальдивы", "the Maldives"),
+        "UAE":       (2_000_000, "ОАЭ (Дубай)", "UAE (Dubai)"),
+        "Indonesia": (1_800_000, "Бали (Индонезия)", "Bali (Indonesia)"),
+        "Spain":     (1_600_000, "Испанию (Барселона)", "Spain (Barcelona)"),
+        "Thailand":  (1_300_000, "Таиланд (Пхукет)", "Thailand (Phuket)"),
+        "Vietnam":   (1_200_000, "Вьетнам (Дананг)", "Vietnam (Da Nang)"),
+        "Sri Lanka": (1_200_000, "Шри-Ланку", "Sri Lanka"),
+        "Turkey":    (1_200_000, "Турцию (Анталья)", "Turkey (Antalya)"),
+        "Georgia":   (1_100_000, "Грузию (Батуми)", "Georgia (Batumi)"),
+        "Egypt":     (1_050_000, "Египет (Шарм-эль-Шейх)", "Egypt (Sharm El Sheikh)"),
+    }
+
+    def _check_budget_reality(self, *, is_russian: bool) -> dict[str, Any] | None:
+        """Returns a warning response if budget is clearly too low for chosen destination."""
+        country = self.context.country
+        budget = self.context.budget_kzt
+        nights = self.context.nights or 7
+        if not country or not budget:
+            return None
+        entry = self._DESTINATION_MIN_BUDGET.get(country)
+        if not entry:
+            return None
+        # Scale minimum to actual nights (base is 7 nights)
+        min_kzt_base, dest_ru, dest_en = entry
+        min_kzt = int(min_kzt_base * nights / 7)
+        if budget >= min_kzt:
+            return None  # budget is fine
+
+        # Budget is too low for this destination
+        min_usd = round(min_kzt / USD_TO_KZT)
+        user_usd = round(budget / USD_TO_KZT)
+        if is_russian:
+            msg = (
+                f"В {dest_ru} на {nights} {'ночь' if nights == 1 else 'ночей'} минимальная стоимость пакета "
+                f"с прямым перелётом начинается от {min_kzt:,} ₸ (~${min_usd:,}). "
+                f"В рамках вашего бюджета (до {budget:,} ₸ / ~${user_usd:,}) мы можем предложить "
+                f"отличные 4–5★ отели в других направлениях (например, Турция или Египет), либо рассмотреть альтернативные даты. "
+                f"Как поступим?"
+            )
+            prompts = [
+                f"Подобрать альтернативу до {budget:,} ₸",
+                f"Показать {dest_ru} от {min_kzt:,} ₸",
+            ]
+        else:
+            msg = (
+                f"A package to {dest_en} for {nights} nights with direct flights starts from "
+                f"{min_kzt:,} ₸ (~${min_usd:,}). "
+                f"Within your budget (up to {budget:,} ₸ / ~${user_usd:,}) we can offer "
+                f"excellent 4-5★ options in other destinations (such as Turkey or Egypt), or explore alternative dates. "
+                f"How would you like to proceed?"
+            )
+            prompts = [
+                f"Find alternatives within ${user_usd:,}",
+                f"Show {dest_en} packages from ${min_usd:,}",
+            ]
+        return {
+            "reply": msg,
+            "state": "BUDGET_MISMATCH",
+            "status": "INCOMPLETE",
+            "missing_fields": [],
+            "results": [],
+            "prompts": prompts,
+            "slots": self.context.dict,
+            "budget_mismatch": {
+                "country": country,
+                "user_budget_kzt": budget,
+                "min_budget_kzt": min_kzt,
+                "min_budget_usd": min_usd,
+            },
+        }
+
 
 
     def _merge(self, updates: dict[str, Any]) -> None:
@@ -865,7 +1079,7 @@ class TravelAgentSession:
 
             return (
                 f"Подобрал {party_ru} лучшие варианты в {city_ru} {airline_str} из {origin_ru} (вылет {dep_date_str}, {request.nights} ночей). "
-                f"Топ-рекомендация — {best.hotel_name} ({best.stars}★, рейтинг {best.rating}/5). "
+                f"Топ-рекомендация: {best.hotel_name} ({best.stars}★, рейтинг {best.rating}/5). "
                 f"Все 5 пакетов ниже включают проживание, выбранное питание и перелет в обе стороны."
             )
         else:
@@ -892,18 +1106,18 @@ class TravelAgentSession:
 
             return (
                 f"Curated the best options {party_en} to {city_en} {airline_en}{dep_str}. "
-                f"Top recommendation — {best.hotel_name} ({best.stars}★, rating {best.rating}/5). "
+                f"Top recommendation: {best.hotel_name} ({best.stars}★, rating {best.rating}/5). "
                 f"All 5 packages below include accommodation, selected meal plan, and roundtrip flights."
             )
 
 
 
 BADGES = [
-    "🔥 Top Recommended",
-    "⭐️ Highest Rating",
-    "🌊 Beachfront Sanctuary",
-    "💰 Best Value Package",
-    "🌟 Ultra Luxury Retreat",
+    "Top Recommended",
+    "Highest Rating",
+    "Beachfront Sanctuary",
+    "Best Value Package",
+    "Ultra Luxury Retreat",
 ]
 
 
@@ -911,39 +1125,25 @@ def curate_top_five(
     recommendations: list[HotelRecommendation],
     request: HotelSearchRequest,
 ) -> list[HotelRecommendation]:
-    """Curates top 5 distinct properties ensuring country consistency."""
+    """Curates top distinct properties ensuring strict budget compliance."""
+    if not recommendations:
+        return []
+
+    # If we have some recommendations within budget, but fewer than 5, try relaxing stars/meal while strictly keeping budget
     if len(recommendations) < 5:
         known = {item.id for item in recommendations}
-        # First relax budget & star rating but strictly keep destination country
         relaxed_same_country = request.model_copy(update={
             "stars": None,
             "meal_type": None,
-            "budget_kzt": max(request.budget_kzt, 4_000_000),
         })
         same_country_candidates = mock_search_tourvisor_api(relaxed_same_country)
         for item in same_country_candidates:
-            if item.id not in known:
+            if item.id not in known and item.total_price_kzt <= request.budget_kzt:
                 recommendations.append(item)
                 known.add(item.id)
 
-    if len(recommendations) < 5:
-        # Fallback to worldwide luxury properties with reduced match score
-        relaxed_global = request.model_copy(update={
-            "country": None,
-            "stars": None,
-            "meal_type": None,
-            "budget_kzt": max(request.budget_kzt, 4_000_000),
-        })
-        known = {item.id for item in recommendations}
-        global_candidates = mock_search_tourvisor_api(relaxed_global)
-        for item in global_candidates:
-            if item.id not in known:
-                item.match_score = 75
-                recommendations.append(item)
-                known.add(item.id)
-
-    if len(recommendations) < 5:
-        return recommendations
+    if not recommendations:
+        return []
 
     ranked = sorted(recommendations, key=lambda item: (-item.match_score, -item.rating, item.total_price_kzt))
     selected = [ranked[0]]
@@ -959,7 +1159,7 @@ def curate_top_five(
             selected.append(choice)
 
     for item in ranked:
-        if len(selected) == 5:
+        if len(selected) == min(5, len(ranked)):
             break
         if item not in selected:
             selected.append(item)
@@ -986,7 +1186,7 @@ async def process_chat_message(
 
     if not message or not message.strip():
         greeting = (
-            "Здравствуйте! Я ваш автономный AI-консьерж VoyageAI. "
+            "Здравствуйте! Я ваш автономный AI-консьерж Zari Travel. "
             "Куда бы вы хотели отправиться, на сколько ночей, какой состав гостей и бюджет?"
             if is_russian else GREETING_MESSAGE
         )
@@ -1002,7 +1202,7 @@ async def process_chat_message(
 
     if _is_greeting(message):
         greeting = (
-            "Здравствуйте! Я ваш персональный AI-консьерж VoyageAI. "
+            "Здравствуйте! Я ваш персональный AI-консьерж Zari Travel. "
             "Уточните направление, дату вылета, состав гостей и ориентировочный бюджет."
             if is_russian else GREETING_MESSAGE
         )
@@ -1020,9 +1220,9 @@ async def process_chat_message(
         return await session.handle_message(message, history=history, lang=lang)
     except OpenRouterAPIError:
         error_msg = (
-            "В данный момент VoyageAI обновляет поисковые шлюзы. Пожалуйста, повторите запрос через несколько секунд."
+            "В данный момент Zari Travel обновляет поисковые шлюзы. Пожалуйста, повторите запрос через несколько секунд."
             if is_russian
-            else "VoyageAI is currently refreshing connection. Please resend your message in a few moments."
+            else "Zari Travel is currently refreshing connection. Please resend your message in a few moments."
         )
         return {
             "reply": error_msg,

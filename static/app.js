@@ -1,5 +1,5 @@
 /**
- * VoyageAI: Autonomous Travel Concierge
+ * Zari Travel: Autonomous Travel Concierge
  * Frontend Client Application
  */
 
@@ -7,95 +7,108 @@
 const TRANSLATIONS = {
   EN: {
     // Header & Showcase
-    tag_showcase:      'Digital Bridge 2026 Showcase',
-    new_itinerary:     'New Itinerary',
+    tag_showcase: 'AUTONOMOUS TRAVEL PLATFORM · V1.0',
+    new_itinerary: 'New Itinerary',
 
     // Hero Section
-    hero_eyebrow:      'AUTONOMOUS LUXURY TRAVEL · 24/7 CONCIERGE',
-    hero_title:        'VoyageAI —<br><span>Your Autonomous</span><br>Travel Concierge',
-    hero_desc:         'Bespoke itinerary curation powered by Google Gemini. Direct roundtrip flights, handpicked 5-star suites, and transparent pricing in USD & KZT with zero commission markups.',
-    hero_cta:          'Start Curation',
+    hero_eyebrow: 'AUTONOMOUS LUXURY TRAVEL · 24/7 CONCIERGE',
+    hero_title: 'Zari Travel.<br><span>Your Autonomous</span><br>Travel Concierge',
+    hero_desc: 'Bespoke itinerary curation powered by Google Gemini. Direct roundtrip flights, handpicked 5-star suites, and transparent pricing in USD & KZT with zero commission markups.',
+    hero_cta: 'Start Curation',
 
     // Hero Stats
-    stat_concierge:    'Autonomous Concierge',
-    stat_resorts:      'Elite World Resorts',
+    stat_concierge: 'Autonomous Concierge',
+    stat_resorts: 'Elite World Resorts',
     stat_destinations: 'Top Global Destinations',
-    stat_commission:   'Hidden Commission',
+    stat_commission: 'Hidden Commission',
 
     // Section Intro
-    section_intro_eyebrow: 'VOYAGEAI CONCIERGE',
-    section_intro_title:   'Where shall we take you?',
-    section_intro_desc:    'A single conversational prompt replaces tedious multi-step search engines. VoyageAI interprets your travel style, selects non-stop flight routes, and matches real suites.',
+    section_intro_eyebrow: 'Zari Travel CONCIERGE',
+    section_intro_title: 'Where shall we take you?',
+    section_intro_desc: 'A single conversational prompt replaces tedious multi-step search engines. Zari Travel interprets your travel style, selects non-stop flight routes, and matches real suites.',
 
     // Chat Panel
-    panel_status:      'VoyageAI Active · Real-time Parameter Extraction',
-    panel_sub:         'Natural Language Parsing',
-    welcome_msg:       'Welcome to VoyageAI! I am your autonomous travel concierge. Where would you like to travel, for how many nights, and what is your preferred budget and party size?',
-    send_btn:          'Send ↗',
+    panel_status: 'Zari Travel Active · Real-time Parameter Extraction',
+    panel_sub: 'Natural Language Parsing',
+    welcome_msg: 'Welcome to Zari Travel! I am your autonomous travel concierge. Where would you like to travel, for how many nights, and what is your preferred budget and party size?',
+    send_btn: 'Send ↗',
     input_placeholder: 'e.g. Solo luxury escape to Dubai from Astana for 7 nights, 5★, $3,500 budget',
 
     // Demo Quick-Launch Chips
-    chip_antalya:      '🌴 Family holiday in Antalya, 7 nights',
-    chip_dubai:        '🏙️ Solo trip to Dubai, 5 nights',
-    chip_phuket:       '🏖️ Phuket vacation, 8 nights',
-    spec_beach:        'Beach',
-    spec_board:        'Meal Plan',
-    spec_in_room:      'In Room',
-    spec_children:     'For Children',
-    spec_territory:    'Hotel Grounds',
-    flex_dates_label:  'Flexible departure dates:',
+    chip_antalya: 'Family holiday in Antalya from Astana, 7 nights',
+    chip_dubai: 'Solo trip to Dubai, 5 nights',
+    chip_phuket: 'Phuket vacation, 8 nights',
+    spec_beach: 'Beach',
+    spec_board: 'Meal Plan',
+    spec_in_room: 'In Room',
+    spec_children: 'For Children',
+    spec_territory: 'Hotel Grounds',
+    flex_dates_label: 'Flexible departure dates:',
+
+    // Legal
+    legal_privacy: 'Privacy Policy',
+    legal_terms: 'Terms of Service',
 
     // Right Column: HOW IT WORKS
-    how_label:         'HOW IT WORKS',
-    how_title:         'Your Vision.<br>Our Autonomous Engine.',
-    how_step1:         'State your vision in natural conversational language',
-    how_step2:         'VoyageAI extracts dates, direct flights &amp; suite tiers',
-    how_step3:         'Receive Top 5 curated vacation packages with flight tickets',
-    how_note:          'Synchronized with live scheduled airline routes &amp; verified resort suites.',
-    how_cta:           'View Curated Packages',
+    how_label: 'HOW IT WORKS',
+    how_title: 'Your Vision.<br>Our Autonomous Engine.',
+    how_step1: 'State your vision in natural conversational language',
+    how_step2: 'Zari Travel extracts dates, direct flights &amp; suite tiers',
+    how_step3: 'Receive Top 5 curated vacation packages with flight tickets',
+    how_note: 'Synchronized with live scheduled airline routes &amp; verified resort suites.',
+    how_cta: 'View Curated Packages',
 
     // Results Section
-    bespoke_label:     'BESPOKE SELECTION',
-    top5_heading:      'Top 5 Tailored Packages',
-    awaiting:          'Awaiting your request',
-    analyzing:         'Analyzing travel criteria & flight schedules...',
-    empty_heading:     'Your bespoke matches will appear here',
-    empty_sub:         'Send a message to VoyageAI above or select one of the sample itineraries.',
-    results_found:     (n) => `Top ${n} Bespoke Matches`,
-    complete_msg:      'Here are your Top 5 bespoke curated options. Compare packages and select your preferred suite.',
-    error_msg:         'VoyageAI is currently refreshing connection. Please resend your message in a few moments.',
+    bespoke_label: 'BESPOKE SELECTION',
+    top5_heading: 'Top 5 Tailored Packages',
+    awaiting: 'Awaiting your request',
+    analyzing: 'Analyzing travel criteria & flight schedules...',
+    empty_heading: 'Your bespoke matches will appear here',
+    empty_sub: 'Send a message to Zari Travel above or select one of the sample itineraries.',
+    results_found: (n) => `Top ${n} Bespoke Matches`,
+    complete_msg: 'Here are your Top 5 bespoke curated options. Compare packages and select your preferred suite.',
+    error_msg: 'Zari Travel is currently refreshing connection. Please resend your message in a few moments.',
 
     // Hotel Card Elements
-    instant_confirm:   'Instant Confirmation',
-    explore_suites:    'Explore Suite Options & Details',
-    wa_share:          '📲 Share via WhatsApp',
-    flight_direct:     'Direct Flight',
-    flight_nonstop:    'non-stop',
-    flight_included:   '✓ Flight Included in Package',
-    flight_baggage:    '23 kg check-in + 8 kg cabin baggage',
+    instant_confirm: 'Instant Confirmation',
+    explore_suites: 'Explore Suite Options & Details',
+    wa_share: 'Share via WhatsApp',
+    flight_direct: 'Direct Flight',
+    flight_nonstop: 'non-stop',
+    flight_included: 'Flight Included in Package',
+    flight_baggage: '23 kg check-in + 8 kg cabin baggage',
+    meal_selector_label: 'Meal Plan:',
+    meal_bb: 'BB',
+    meal_hb: 'HB',
+    meal_fb: 'FB',
+    meal_ai: 'AI',
+    meal_uai: 'UAI',
+    meal_base: 'base',
+    meal_geo_label: 'Beach:',
+    meal_center_label: 'Center:',
 
     // Drawer / Modal Elements
     modal_dates_label: 'Tour Dates',
-    modal_flight_title:'Included Direct Roundtrip Flight',
-    modal_flex_title:  'Flexible Dates (±1-2 days)',
-    modal_flex_sub:    'Live confirmed fares',
+    modal_flight_title: 'Included Direct Roundtrip Flight',
+    modal_flex_title: 'Flexible Dates (±1-2 days)',
+    modal_flex_sub: 'Live confirmed fares',
     modal_rooms_title: 'Available Suites & Rooms',
-    modal_categories:  'Categories',
+    modal_categories: 'Categories',
     modal_total_label: 'Total Package (Suite + Direct Flights for all guests):',
     modal_reserve_btn: 'Book Package',
     modal_curator_highlights: 'Curator Highlights:',
-    modal_room_base:   'Standard Base',
-    modal_from:        'from',
+    modal_room_base: 'Standard Base',
+    modal_from: 'from',
 
     // VIP Booking Modal
-    booking_eyebrow:   'VOYAGEAI VIP RESERVATION',
-    booking_title:     'Confirm Itinerary',
-    booking_label_name:'Primary Guest Full Name',
+    booking_eyebrow: 'Zari Travel VIP RESERVATION',
+    booking_title: 'Confirm Itinerary',
+    booking_label_name: 'Primary Guest Full Name',
     booking_name_placeholder: 'Alexander Vance',
-    booking_label_phone:'WhatsApp / Mobile Phone (with country code)',
-    booking_cta:       'Confirm Reservation with Concierge',
+    booking_label_phone: 'WhatsApp / Mobile Phone (with country code)',
+    booking_cta: 'Confirm Reservation with Concierge',
     booking_success_title: 'Reservation Request Received',
-    booking_success_desc: 'Your dedicated VoyageAI Concierge Officer will contact you within 5 minutes via WhatsApp to finalize your luxury flight and suite booking.',
+    booking_success_desc: 'Your dedicated Zari Travel Concierge Officer will contact you within 5 minutes via WhatsApp to finalize your luxury flight and suite booking.',
     booking_success_close: 'Close Window',
 
     // Session Reset
@@ -104,95 +117,108 @@ const TRANSLATIONS = {
 
   RU: {
     // Header & Showcase
-    tag_showcase:      'Digital Bridge 2026 Экспо',
-    new_itinerary:     'Новый маршрут',
+    tag_showcase: 'АВТОНОМНАЯ ТРЕВЕЛ-ПЛАТФОРМА · V1.0',
+    new_itinerary: 'Новый маршрут',
 
     // Hero Section
-    hero_eyebrow:      'АВТОНОМНЫЙ ПРЕМИУМ-ТРЕВЕЛ · КОНСЬЕРЖ 24/7',
-    hero_title:        'VoyageAI —<br><span>Ваш автономный</span><br>тревел-консьерж',
-    hero_desc:         'Персональный подбор туров на базе Google Gemini. Прямые рейсы в обе стороны, проверенные 5★ отели и прозрачные цены в тенге и долларах без скрытых наценок.',
-    hero_cta:          'Подобрать тур',
+    hero_eyebrow: 'АВТОНОМНЫЙ ПРЕМИУМ-ТРЕВЕЛ · КОНСЬЕРЖ 24/7',
+    hero_title: 'Zari Travel.<br><span>Ваш автономный</span><br>тревел-консьерж',
+    hero_desc: 'Персональный подбор туров на базе Google Gemini. Прямые рейсы в обе стороны, проверенные 5★ отели и прозрачные цены в тенге и долларах без скрытых наценок.',
+    hero_cta: 'Подобрать тур',
 
     // Hero Stats
-    stat_concierge:    'АВТОНОМНЫЙ СЕРВИС',
-    stat_resorts:      'ЛУЧШИХ КУРОРТОВ',
+    stat_concierge: 'АВТОНОМНЫЙ СЕРВИС',
+    stat_resorts: 'ЛУЧШИХ КУРОРТОВ',
     stat_destinations: 'ПОПУЛЯРНЫХ НАПРАВЛЕНИЙ',
-    stat_commission:   'СКРЫТЫХ КОМИССИЙ',
+    stat_commission: 'СКРЫТЫХ КОМИССИЙ',
 
     // Section Intro
-    section_intro_eyebrow: 'КОНСЬЕРЖ VOYAGEAI',
-    section_intro_title:   'Куда бы вы хотели отправиться?',
-    section_intro_desc:    'Один текстовый запрос заменяет сложные формы поиска. VoyageAI понимает пожелания, подбирает прямые рейсы и лучшие номера.',
+    section_intro_eyebrow: 'КОНСЬЕРЖ Zari Travel',
+    section_intro_title: 'Куда бы вы хотели отправиться?',
+    section_intro_desc: 'Один текстовый запрос заменяет сложные формы поиска. Zari Travel понимает пожелания, подбирает прямые рейсы и лучшие номера.',
 
     // Chat Panel
-    panel_status:      'VoyageAI Активен · Извлечение параметров в реальном времени',
-    panel_sub:         'Анализ на естественном языке',
-    welcome_msg:       'Добро пожаловать в VoyageAI! Я ваш автономный тревел-консьерж. Куда желаете полететь, на сколько ночей и каков ваш бюджет?',
-    send_btn:          'Отправить ↗',
+    panel_status: 'Zari Travel Активен · Извлечение параметров в реальном времени',
+    panel_sub: 'Анализ на естественном языке',
+    welcome_msg: 'Добро пожаловать в Zari Travel! Я ваш автономный тревел-консьерж. Куда желаете полететь, на сколько ночей и каков ваш бюджет?',
+    send_btn: 'Отправить ↗',
     input_placeholder: 'Напр.: Один в Дубай на 7 ночей из Астаны, бюджет $3 500',
 
     // Demo Quick-Launch Chips
-    chip_antalya:      '🌴 Семейный отдых в Анталье на 7 ночей',
-    chip_dubai:        '🏙️ Соло-поездка в Дубай на 5 ночей',
-    chip_phuket:       '🏖️ Отдых на Пхукете на 8 ночей',
-    spec_beach:        'Пляж',
-    spec_board:        'Питание',
-    spec_in_room:      'В номере',
-    spec_children:     'Для детей',
-    spec_territory:    'Территория',
-    flex_dates_label:  'Соседние даты вылета:',
+    chip_antalya: 'Семейный тур в Анталию из Астаны на 7 ночей',
+    chip_dubai: 'Соло-поездка в Дубай на 5 ночей',
+    chip_phuket: 'Отдых на Пхукете на 8 ночей',
+    spec_beach: 'Пляж',
+    spec_board: 'Питание',
+    spec_in_room: 'В номере',
+    spec_children: 'Для детей',
+    spec_territory: 'Территория',
+    flex_dates_label: 'Соседние даты вылета:',
+
+    // Legal
+    legal_privacy: 'Политика конфиденциальности',
+    legal_terms: 'Пользовательское соглашение',
 
     // Right Column: HOW IT WORKS
-    how_label:         'КАК ЭТО РАБОТАЕТ',
-    how_title:         'Ваш запрос.<br>Наш автономный движок.',
-    how_step1:         'Опишите пожелания к поездке на обычном языке',
-    how_step2:         'VoyageAI подберёт даты, прямые рейсы и категории номеров',
-    how_step3:         'Получите топ-5 индивидуальных пакетов с перелётом',
-    how_note:          'Синхронизировано с расписанием рейсов и проверенными отелями.',
-    how_cta:           'Смотреть варианты',
+    how_label: 'КАК ЭТО РАБОТАЕТ',
+    how_title: 'Ваш запрос.<br>Наш автономный движок.',
+    how_step1: 'Опишите пожелания к поездке на обычном языке',
+    how_step2: 'Zari Travel подберёт даты, прямые рейсы и категории номеров',
+    how_step3: 'Получите топ-5 индивидуальных пакетов с перелётом',
+    how_note: 'Синхронизировано с расписанием рейсов и проверенными отелями.',
+    how_cta: 'Смотреть варианты',
 
     // Results Section
-    bespoke_label:     'ПОДБОРКА ДЛЯ ВАС',
-    top5_heading:      'Топ-5 персональных пакетов',
-    awaiting:          'Ожидание запроса',
-    analyzing:         'Анализ параметров путешествия и расписания рейсов...',
-    empty_heading:     'Ваши персональные подборки появятся здесь',
-    empty_sub:         'Отправьте сообщение VoyageAI или выберите один из сценариев выше.',
-    results_found:     (n) => `Топ-${n} персональных туров`,
-    complete_msg:      'Вот топ-5 подобранных вариантов под ваши критерии. Сравните пакеты и выберите подходящий номер.',
-    error_msg:         'VoyageAI обновляет соединение. Пожалуйста, повторите запрос через несколько секунд.',
+    bespoke_label: 'ПОДБОРКА ДЛЯ ВАС',
+    top5_heading: 'Топ-5 персональных пакетов',
+    awaiting: 'Ожидание запроса',
+    analyzing: 'Анализ параметров путешествия и расписания рейсов...',
+    empty_heading: 'Ваши персональные подборки появятся здесь',
+    empty_sub: 'Отправьте сообщение Zari Travel или выберите один из сценариев выше.',
+    results_found: (n) => `Топ-${n} персональных туров`,
+    complete_msg: 'Вот топ-5 подобранных вариантов под ваши критерии. Сравните пакеты и выберите подходящий номер.',
+    error_msg: 'Zari Travel обновляет соединение. Пожалуйста, повторите запрос через несколько секунд.',
 
     // Hotel Card Elements
-    instant_confirm:   'Мгновенное подтверждение',
-    explore_suites:    'Выбрать номер и детали',
-    wa_share:          '📲 Отправить в WhatsApp',
-    flight_direct:     'Прямой рейс',
-    flight_nonstop:    'без пересадок',
-    flight_included:   '✓ Рейс включен в стоимость пакета',
-    flight_baggage:    'Багаж: 23 кг + 8 кг ручная кладь',
+    instant_confirm: 'Мгновенное подтверждение',
+    explore_suites: 'Выбрать номер и детали',
+    wa_share: 'Отправить в WhatsApp',
+    flight_direct: 'Прямой рейс',
+    flight_nonstop: 'без пересадок',
+    flight_included: 'Рейс включен в стоимость пакета',
+    flight_baggage: 'Багаж: 23 кг + 8 кг ручная кладь',
+    meal_selector_label: 'Питание:',
+    meal_bb: 'BB',
+    meal_hb: 'HB',
+    meal_fb: 'FB',
+    meal_ai: 'AI',
+    meal_uai: 'UAI',
+    meal_base: 'база',
+    meal_geo_label: 'Пляж:',
+    meal_center_label: 'Центр:',
 
     // Drawer / Modal Elements
     modal_dates_label: 'Даты тура',
-    modal_flight_title:'Включенный прямой рейс (туда и обратно)',
-    modal_flex_title:  'Соседние даты (±1-2 дня)',
-    modal_flex_sub:    'Гарантированные тарифы',
+    modal_flight_title: 'Включенный прямой рейс (туда и обратно)',
+    modal_flex_title: 'Соседние даты (±1-2 дня)',
+    modal_flex_sub: 'Гарантированные тарифы',
     modal_rooms_title: 'Доступные категории номеров',
-    modal_categories:  'категорий',
+    modal_categories: 'категорий',
     modal_total_label: 'Итого за тур (Номер + Авиабилеты на всех гостей):',
     modal_reserve_btn: 'Забронировать тур',
     modal_curator_highlights: 'Особенности отеля:',
-    modal_room_base:   'Базовый номер',
-    modal_from:        'от',
+    modal_room_base: 'Базовый номер',
+    modal_from: 'от',
 
     // VIP Booking Modal
-    booking_eyebrow:   'VIP-БРОНИРОВАНИЕ VOYAGEAI',
-    booking_title:     'Подтверждение бронирования',
-    booking_label_name:'ФИО основного гостя',
+    booking_eyebrow: 'VIP-БРОНИРОВАНИЕ Zari Travel',
+    booking_title: 'Подтверждение бронирования',
+    booking_label_name: 'ФИО основного гостя',
     booking_name_placeholder: 'Александр Иванов',
-    booking_label_phone:'WhatsApp / Номер телефона',
-    booking_cta:       'Подтвердить бронирование',
+    booking_label_phone: 'WhatsApp / Номер телефона',
+    booking_cta: 'Подтвердить бронирование',
     booking_success_title: 'Заявка на бронирование принята',
-    booking_success_desc: 'Ваш персональный консьерж VoyageAI свяжется с вами в WhatsApp в течение 5 минут для подтверждения рейса и категории номера.',
+    booking_success_desc: 'Ваш персональный консьерж Zari Travel свяжется с вами в WhatsApp в течение 5 минут для подтверждения рейса и категории номера.',
     booking_success_close: 'Закрыть окно',
 
     // Session Reset
@@ -222,7 +248,7 @@ const CHIP_QUERIES = {
   },
   chip_antalya: {
     en: 'Family holiday in Antalya from Astana departing Oct 14 for 7 nights: 2 adults, 1 child (age 6), $2,800 budget',
-    ru: 'Семейный отдых в Анталье из Астаны с 14 октября на 7 ночей: 2 взрослых, 1 ребёнок (6 лет), бюджет $2 800',
+    ru: 'Семейный тур в Анталию из Астаны с 14 октября на 7 ночей: 2 взрослых, 1 ребёнок (6 лет), бюджет $2 800',
   },
   chip_phuket: {
     en: 'Phuket vacation from Almaty departing Nov 10 for 8 nights: 2 adults, $2,200 budget',
@@ -364,7 +390,7 @@ function getHotelSpecs(hotel, isRu) {
   }
 }
 
-let currentLang = localStorage.getItem('voyageai-lang') || 'EN';
+let currentLang = localStorage.getItem('Zari Travel-lang') || 'EN';
 let lastResults = [];
 let lastFlight = null;
 
@@ -403,7 +429,7 @@ const moneyUsd = new Intl.NumberFormat('en-US', { style: 'currency', currency: '
 // ── Language Controller ──────────────────────────────────────────────────────
 function setLanguage(lang) {
   currentLang = lang;
-  localStorage.setItem('voyageai-lang', lang);
+  localStorage.setItem('Zari Travel-lang', lang);
   const t = TRANSLATIONS[lang];
 
   // Update button classes
@@ -420,7 +446,7 @@ function setLanguage(lang) {
       } else if (key === 'how_title' || key === 'hero_title') {
         el.innerHTML = t[key];
       } else if (key === 'hero_cta') {
-        el.innerHTML = `${t[key]} <span>→</span>`;
+        el.textContent = t[key];
       } else if (key === 'booking_cta') {
         el.innerHTML = `${t[key]} <span>↗</span>`;
       } else if (key === 'how_cta') {
@@ -473,6 +499,63 @@ document.querySelectorAll('.lang-btn').forEach((btn) => {
   });
 });
 
+// Hero CTA: smooth single scroll to chat section and focus input without secondary jump
+(function () {
+  const heroCtaLink = document.querySelector('.hero-section .primary-cta, a[href="#ai-chat-section"]');
+  if (heroCtaLink) {
+    heroCtaLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      const chatSection = document.getElementById('ai-chat-section');
+      if (chatSection) {
+        chatSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      setTimeout(() => {
+        const inputField = document.getElementById('user-input');
+        if (inputField) {
+          inputField.focus({ preventScroll: true });
+        }
+      }, 400);
+    });
+  }
+})();
+
+// Keyboard accessibility: Escape key closes hotel modal
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const modal = getHotelModal();
+    if (modal && !modal.classList.contains('hidden') && modal.style.display !== 'none') {
+      closeHotelModal();
+    }
+    const bookingModal = document.getElementById('booking-modal');
+    if (bookingModal && !bookingModal.classList.contains('hidden')) {
+      bookingModal.classList.add('hidden');
+      bookingModal.style.display = 'none';
+    }
+  }
+});
+
+// Overlay (backdrop) click closes hotel modal
+(function () {
+  const modal = document.getElementById('hotel-modal');
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      // Close only when clicking the overlay backdrop, not the inner content
+      if (e.target === modal) {
+        closeHotelModal();
+      }
+    });
+  }
+  const bModal = document.getElementById('booking-modal');
+  if (bModal) {
+    bModal.addEventListener('click', (e) => {
+      if (e.target === bModal) {
+        bModal.classList.add('hidden');
+        bModal.style.display = 'none';
+      }
+    });
+  }
+})();
+
 // Demo chips click handlers
 document.querySelectorAll('.demo-chip').forEach((chip) => {
   chip.addEventListener('click', () => {
@@ -513,7 +596,7 @@ if (showResultsButton) {
 // Reset session handler
 if (resetSessionButton) {
   resetSessionButton.addEventListener('click', () => {
-    window.sessionStorage.removeItem('voyageai-session-id');
+    window.sessionStorage.removeItem('Zari Travel-session-id');
     sessionId = getSessionId();
     messages.innerHTML = '';
     const t = TRANSLATIONS[currentLang];
@@ -535,10 +618,10 @@ if (resetSessionButton) {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 function getSessionId() {
-  const key = 'voyageai-session-id';
+  const key = 'Zari Travel-session-id';
   const current = window.sessionStorage.getItem(key);
   if (current) return current;
-  const created = `voyage-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+  const created = `zari-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
   window.sessionStorage.setItem(key, created);
   return created;
 }
@@ -610,12 +693,12 @@ function buildWhatsAppText(hotel) {
     flightLine = `${fl.airline} ${fl.flight_number_outbound} · ${fl.departure_airport}→${fl.arrival_airport} · ${fl.departure_date} (${fl.departure_time}) ➔ ${fl.return_date} (${fl.return_departure_time})`;
   }
   return [
-    `🌴 *VoyageAI: ${hotel.hotel_name} ${stars}*`,
+    `🌴 *Zari Travel: ${hotel.hotel_name} ${stars}*`,
     `📍 ${hotel.country_city}`,
     `✈️ ${flightLine}`,
     `🏨 ${isRu ? 'Номер' : 'Suite'}: ${room}`,
     `💰 ${isRu ? 'Итого' : 'Total'}: ${moneyKzt.format(hotel.total_price_kzt)} ₸ (~$${moneyKzt.format(usdVal)})`,
-    `🔗 VoyageAI Concierge — voyageai.kz`,
+    `🔗 Zari Travel Concierge — Zari Travel.kz`,
   ].join('\n');
 }
 
@@ -665,11 +748,11 @@ function selectFlexibleDate(hotel, dateObj) {
     if (content) {
       const depTextEl = content.querySelector('[data-modal-flight-dep]');
       if (depTextEl && hotel.flight) {
-        depTextEl.textContent = `🛫 ${hotel.flight.departure_city} (${hotel.flight.departure_airport}) ${hotel.flight.departure_time} ➔ ${hotel.flight.arrival_city} (${hotel.flight.arrival_airport}) ${hotel.flight.arrival_time} · ${dateObj.departure_date} (${depShort})`;
+        depTextEl.textContent = `${hotel.flight.departure_city} (${hotel.flight.departure_airport}) ${hotel.flight.departure_time} ➔ ${hotel.flight.arrival_city} (${hotel.flight.arrival_airport}) ${hotel.flight.arrival_time} · ${dateObj.departure_date} (${depShort})`;
       }
       const retTextEl = content.querySelector('[data-modal-flight-ret]');
       if (retTextEl && hotel.flight) {
-        retTextEl.textContent = `🔄 ${isRu ? 'Обратный рейс' : 'Return flight'}: ${hotel.flight.arrival_airport} ➔ ${hotel.flight.departure_airport} · ${dateObj.return_date} (${retShort}) (${hotel.flight.return_departure_time} ➔ ${hotel.flight.return_arrival_time})`;
+        retTextEl.textContent = `${isRu ? 'Обратный рейс' : 'Return flight'}: ${hotel.flight.arrival_airport} ➔ ${hotel.flight.departure_airport} · ${dateObj.return_date} (${retShort}) (${hotel.flight.return_departure_time} ➔ ${hotel.flight.return_arrival_time})`;
       }
       const modalDatesEl = content.querySelector('[data-modal-flight-dates]');
       if (modalDatesEl) {
@@ -693,7 +776,7 @@ function hotelCard(hotel, index) {
     const depShort = formatShortDate(flight.departure_date);
     const retShort = formatShortDate(flight.return_date);
     const datesSpan = depShort && retShort ? ` (${depShort} – ${retShort})` : '';
-    const routeText = `✈️ ${t.flight_direct}: <b>${escapeHtml(flight.departure_airport)}</b> ➔ <b>${escapeHtml(flight.arrival_airport)}</b><span id="flight-dates-${escapeHtml(hotel.id)}">${datesSpan}</span>, ${t.flight_nonstop}`;
+    const routeText = `${t.flight_direct}: <b>${escapeHtml(flight.departure_airport)}</b> ➔ <b>${escapeHtml(flight.arrival_airport)}</b><span id="flight-dates-${escapeHtml(hotel.id)}">${datesSpan}</span>, ${t.flight_nonstop}`;
     const baggageText = isRu ? 'Багаж: 23 кг + 8 кг' : '23 kg + 8 kg';
 
     flightBlockHtml = `
@@ -710,8 +793,8 @@ function hotelCard(hotel, index) {
           <span class="hfc-duration">${escapeHtml(flight.duration || '4h 30m')}</span>
         </div>
         <div class="hfc-meta">
-          <span>🛫 ${escapeHtml(flight.departure_time || '08:30')} ➔ 🛬 ${escapeHtml(flight.arrival_time || '11:45')}</span>
-          <span>🧳 ${baggageText}</span>
+          <span>${escapeHtml(flight.departure_time || '08:30')} ➔ ${escapeHtml(flight.arrival_time || '11:45')}</span>
+          <span>${baggageText}</span>
         </div>
       </div>
     `;
@@ -725,9 +808,9 @@ function hotelCard(hotel, index) {
         <span class="cfd-label">${t.flex_dates_label || (isRu ? 'Соседние даты:' : 'Flexible dates:')}</span>
         <div class="cfd-pills">
           ${hotel.flexible_dates.map((fd) => {
-            const isSelected = hotel.flight ? (fd.departure_date === hotel.flight.departure_date) : fd.is_base;
-            const label = getFlexDateLabel(fd, isSelected, isRu);
-            return `
+      const isSelected = hotel.flight ? (fd.departure_date === hotel.flight.departure_date) : fd.is_base;
+      const label = getFlexDateLabel(fd, isSelected, isRu);
+      return `
               <button type="button" class="flex-date-pill ${isSelected ? 'active' : ''}"
                 data-hotel-id="${escapeHtml(hotel.id)}"
                 data-base-label="${escapeHtml(fd.date_label || formatShortDate(fd.departure_date))}"
@@ -739,7 +822,7 @@ function hotelCard(hotel, index) {
                 <span>${moneyKzt.format(fd.total_kzt)} ₸</span>
               </button>
             `;
-          }).join('')}
+    }).join('')}
         </div>
       </div>
     `;
@@ -771,7 +854,28 @@ function hotelCard(hotel, index) {
         <!-- Interactive Flexible Dates in Card -->
         ${flexDatesCardHtml}
 
-        <div class="price-box">
+        <!-- Geo-distance badges -->
+        ${(hotel.distance_beach_m !== undefined) ? `
+        <div class="hotel-geo-badges">
+          <span class="geo-badge">${hotel.distance_beach_m === 0
+        ? (isRu ? 'Пляж: 1-я линия' : 'Beach: Beachfront')
+        : (isRu ? `До пляжа: ${hotel.distance_beach_m} м` : `Beach: ${hotel.distance_beach_m} m`)
+      }</span>
+          <span class="geo-badge">${isRu
+        ? `До центра: ${hotel.distance_center_km} км`
+        : `City center: ${hotel.distance_center_km} km`
+      }</span>
+        </div>` : ''}
+
+        <!-- Meal Plan Selector -->
+        <div class="meal-selector" data-hotel-id="${escapeHtml(hotel.id)}" data-base-kzt="${hotel.total_price_kzt}" data-guests="${(hotel.adults || 1) + (hotel.children || 0)}">
+          <span class="meal-selector-label">${t.meal_selector_label}</span>
+          <div class="meal-btns">
+            ${buildMealButtons(hotel, t)}
+          </div>
+        </div>
+
+        <div class="price-box" id="price-box-${escapeHtml(hotel.id)}">
           <div class="price-main">
             <div>
               <strong id="card-price-kzt-${escapeHtml(hotel.id)}">${moneyKzt.format(hotel.total_price_kzt)} ₸</strong>
@@ -787,12 +891,77 @@ function hotelCard(hotel, index) {
             <span>${t.explore_suites}</span>
             <span>→</span>
           </button>
-          <button class="wa-button" type="button" data-wa-id="${escapeHtml(hotel.id)}">${t.wa_share}</button>
         </div>
       </div>
     </article>
   `;
 }
+
+// ── Meal selector helpers ─────────────────────────────────────────────────────
+const MEAL_LABELS = {
+  'BB - Bed & Breakfast': { en: 'BB', ru: 'BB', title: 'Bed & Breakfast / Только завтрак' },
+  'HB - Half Board': { en: 'HB', ru: 'HB', title: 'Half Board / Завтрак + ужин' },
+  'FB - Full Board': { en: 'FB', ru: 'FB', title: 'Full Board / Полный пансион' },
+  'AI - All Inclusive': { en: 'AI', ru: 'AI', title: 'All Inclusive / Всё включено' },
+  'UAI - Ultra All Inclusive': { en: 'UAI', ru: 'UAI', title: 'Ultra All Inclusive' },
+};
+
+const USD_RATE = 500;
+
+function buildMealButtons(hotel, t) {
+  const meals = hotel.available_meals || ['BB - Bed & Breakfast', 'HB - Half Board', 'FB - Full Board', 'AI - All Inclusive'];
+  const upgrades = hotel.meal_upgrade_prices || {};
+  const guests = (hotel.adults || 1) + (hotel.children || 0);
+  const activeMeal = hotel.meal_type || 'BB - Bed & Breakfast';
+
+  return meals.map(meal => {
+    const lbl = MEAL_LABELS[meal];
+    const label = lbl ? (currentLang === 'RU' ? lbl.ru : lbl.en) : meal.split(' - ')[0];
+    const delta = (upgrades[meal] || 0) * guests;
+    const isBase = delta === 0;
+    const deltaStr = isBase
+      ? (currentLang === 'RU' ? t.meal_base : t.meal_base)
+      : `+${(delta / 1000).toFixed(0)}K ₸`;
+    const isActive = meal === activeMeal;
+    return `<button class="meal-btn${isActive ? ' active' : ''}" type="button"
+      data-meal="${escapeHtml(meal)}" data-delta="${delta}"
+      title="${lbl ? lbl.title : meal}"
+      onclick="selectMeal(this)"
+    >${label} <span class="meal-delta">${deltaStr}</span></button>`;
+  }).join('');
+}
+
+function selectMeal(btn) {
+  const selector = btn.closest('.meal-selector');
+  if (!selector) return;
+  const hotelId = selector.dataset.hotelId;
+  const baseKzt = parseInt(selector.dataset.baseKzt, 10);
+  const delta = parseInt(btn.dataset.delta, 10);
+
+  // Update active state
+  selector.querySelectorAll('.meal-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  // Recalculate price
+  const newKzt = baseKzt + delta;
+  const newUsd = Math.round(newKzt / USD_RATE);
+  const moneyFmt = new Intl.NumberFormat('ru-KZ');
+
+  const kztEl = document.getElementById(`card-price-kzt-${hotelId}`);
+  const usdEl = document.getElementById(`card-price-usd-${hotelId}`);
+  if (kztEl) kztEl.textContent = `${moneyFmt.format(newKzt)} ₸`;
+  if (usdEl) usdEl.textContent = `($${moneyFmt.format(newUsd)})`;
+
+  // Update lastResults entry so modal and WhatsApp use updated price
+  const hotelIdx = (lastResults || []).findIndex(h => h.id === hotelId);
+  if (hotelIdx !== -1) {
+    lastResults[hotelIdx]._selected_meal = btn.dataset.meal;
+    lastResults[hotelIdx]._total_price_kzt_adjusted = newKzt;
+    lastResults[hotelIdx]._total_price_usd_adjusted = newUsd;
+  }
+}
+
+
 
 // ── Render Results ───────────────────────────────────────────────────────────
 function renderResults(items, flight) {
@@ -824,21 +993,12 @@ function renderResults(items, flight) {
   items.forEach((hotel) => {
     // Specifically target explore button using .btn-explore-details or .room-button
     const exploreBtn = results.querySelector(`.btn-explore-details[data-hotel-id="${CSS.escape(hotel.id)}"]`) ||
-                       results.querySelector(`button.room-button[data-hotel-id="${CSS.escape(hotel.id)}"]`);
+      results.querySelector(`button.room-button[data-hotel-id="${CSS.escape(hotel.id)}"]`);
     if (exploreBtn) {
       exploreBtn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
         openHotelModal(hotel);
-      });
-    }
-
-    const waBtn = results.querySelector(`[data-wa-id="${CSS.escape(hotel.id)}"]`);
-    if (waBtn) {
-      waBtn.addEventListener('click', () => {
-        const text = buildWhatsAppText(hotel);
-        const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`;
-        window.open(url, '_blank', 'noopener,noreferrer');
       });
     }
 
@@ -885,7 +1045,7 @@ function openHotelModal(hotel) {
     flightModalHtml = `
       <div class="modal-flight-box">
         <div class="modal-flight-box-title">
-          <span>✈️ ${t.modal_flight_title}${datesSpan}</span>
+          <span>${t.modal_flight_title}${datesSpan}</span>
           <span class="hfc-badge">${t.flight_included}</span>
         </div>
         <div style="display:flex;justify-content:space-between;color:var(--white);font-weight:600;margin-bottom:6px;font-size:0.88rem">
@@ -893,11 +1053,11 @@ function openHotelModal(hotel) {
           <span style="color:var(--cyan)">${escapeHtml(flight.duration)} (${t.flight_nonstop})</span>
         </div>
         <div style="font-size:0.8rem;color:var(--muted-light);display:flex;justify-content:space-between">
-          <span data-modal-flight-dep>🛫 ${escapeHtml(flight.departure_city)} (${escapeHtml(flight.departure_airport)}) ${escapeHtml(flight.departure_time)} ➔ ${escapeHtml(flight.arrival_city)} (${escapeHtml(flight.arrival_airport)}) ${escapeHtml(flight.arrival_time)} · ${escapeHtml(flight.departure_date)} (${depShort})</span>
-          <span>🧳 ${baggageText}</span>
+          <span data-modal-flight-dep>${escapeHtml(flight.departure_city)} (${escapeHtml(flight.departure_airport)}) ${escapeHtml(flight.departure_time)} ➔ ${escapeHtml(flight.arrival_city)} (${escapeHtml(flight.arrival_airport)}) ${escapeHtml(flight.arrival_time)} · ${escapeHtml(flight.departure_date)} (${depShort})</span>
+          <span>${baggageText}</span>
         </div>
         <div style="font-size:0.75rem;color:var(--muted);margin-top:6px">
-          <span data-modal-flight-ret>🔄 ${isRu ? 'Обратный рейс' : 'Return flight'}: ${escapeHtml(flight.arrival_airport)} ➔ ${escapeHtml(flight.departure_airport)} · ${escapeHtml(flight.return_date)} (${retShort}) (${escapeHtml(flight.return_departure_time)} ➔ ${escapeHtml(flight.return_arrival_time)})</span>
+          <span data-modal-flight-ret>${isRu ? 'Обратный рейс' : 'Return flight'}: ${escapeHtml(flight.arrival_airport)} ➔ ${escapeHtml(flight.departure_airport)} · ${escapeHtml(flight.return_date)} (${retShort}) (${escapeHtml(flight.return_departure_time)} ➔ ${escapeHtml(flight.return_arrival_time)})</span>
         </div>
       </div>
     `;
@@ -909,14 +1069,14 @@ function openHotelModal(hotel) {
     flexDatesHtml = `
       <div class="modal-flight-box" style="margin-top:10px">
         <div class="modal-flight-box-title">
-          <span>🗓️ ${t.modal_flex_title}</span>
+          <span>${t.modal_flex_title}</span>
           <small style="color:var(--muted);font-weight:normal">${t.modal_flex_sub}</small>
         </div>
         <div class="modal-flex-dates">
           ${hotel.flexible_dates.map((f) => {
-            const isSelected = hotel.flight ? (f.departure_date === hotel.flight.departure_date) : f.is_base;
-            const label = getFlexDateLabel(f, isSelected, isRu);
-            return `
+      const isSelected = hotel.flight ? (f.departure_date === hotel.flight.departure_date) : f.is_base;
+      const label = getFlexDateLabel(f, isSelected, isRu);
+      return `
               <button type="button" class="flex-date-pill ${isSelected ? 'active' : ''}"
                 data-hotel-id="${escapeHtml(hotel.id)}"
                 data-base-label="${escapeHtml(f.date_label || formatShortDate(f.departure_date))}"
@@ -928,7 +1088,7 @@ function openHotelModal(hotel) {
                 <span>${moneyKzt.format(f.total_kzt)} ₸</span>
               </button>
             `;
-          }).join('')}
+    }).join('')}
         </div>
       </div>
     `;
@@ -963,11 +1123,11 @@ function openHotelModal(hotel) {
         ${flightModalHtml}
         ${flexDatesHtml}
 
-        <p class="detail-summary" style="margin-top:16px">${escapeHtml(hotel.summary)}</p>
+        <p class="detail-summary" style="margin-top:16px">${escapeHtml(isRu && hotel.summary_ru ? hotel.summary_ru : hotel.summary)}</p>
         <div style="background:rgba(15,23,42,0.5);border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:14px">
           <strong style="font-size:0.88rem;color:var(--white);display:block;margin-bottom:6px">${t.modal_curator_highlights}</strong>
           <ul style="margin:0;padding-left:18px;font-size:0.8rem;color:var(--muted-light);line-height:1.5">
-            ${(hotel.pros || []).map((p) => `<li>${escapeHtml(p)}</li>`).join('')}
+            ${(isRu && hotel.pros_ru && hotel.pros_ru.length ? hotel.pros_ru : hotel.pros || []).map((p) => `<li>${escapeHtml(p)}</li>`).join('')}
           </ul>
         </div>
       </div>
@@ -976,23 +1136,23 @@ function openHotelModal(hotel) {
         <!-- TourVisor Hotel Specification Grid -->
         <div class="hotel-spec-grid">
           <div class="hotel-spec-card">
-            <span class="hotel-spec-title">🏖️ ${t.spec_beach || (isRu ? 'Пляж' : 'Beach')}</span>
+            <span class="hotel-spec-title">${t.spec_beach || (isRu ? 'Пляж' : 'Beach')}</span>
             <span class="hotel-spec-desc">${escapeHtml(specs.beach)}</span>
           </div>
           <div class="hotel-spec-card">
-            <span class="hotel-spec-title">🍽️ ${t.spec_board || (isRu ? 'Питание' : 'Meal Plan')}</span>
+            <span class="hotel-spec-title">${t.spec_board || (isRu ? 'Питание' : 'Meal Plan')}</span>
             <span class="hotel-spec-desc">${escapeHtml(specs.board)}</span>
           </div>
           <div class="hotel-spec-card">
-            <span class="hotel-spec-title">🛏️ ${t.spec_in_room || (isRu ? 'В номере' : 'In Room')}</span>
+            <span class="hotel-spec-title">${t.spec_in_room || (isRu ? 'В номере' : 'In Room')}</span>
             <span class="hotel-spec-desc">${escapeHtml(specs.in_room)}</span>
           </div>
           <div class="hotel-spec-card">
-            <span class="hotel-spec-title">👶 ${t.spec_children || (isRu ? 'Для детей' : 'For Children')}</span>
+            <span class="hotel-spec-title">${t.spec_children || (isRu ? 'Для детей' : 'For Children')}</span>
             <span class="hotel-spec-desc">${escapeHtml(specs.children)}</span>
           </div>
           <div class="hotel-spec-card" style="grid-column: 1 / -1">
-            <span class="hotel-spec-title">🏛️ ${t.spec_territory || (isRu ? 'Территория' : 'Hotel Grounds')}</span>
+            <span class="hotel-spec-title">${t.spec_territory || (isRu ? 'Территория' : 'Hotel Grounds')}</span>
             <span class="hotel-spec-desc">${escapeHtml(specs.territory)}</span>
           </div>
         </div>
@@ -1154,8 +1314,8 @@ function openBooking(hotel, room) {
   const fl = hotel.flight || currentFlight || lastFlight;
   const flightDetails = fl
     ? (isRu
-        ? `Рейс: ${fl.airline} (${fl.departure_airport} ➔ ${fl.arrival_airport}) · ${fl.departure_date} – ${fl.return_date}`
-        : `Flight: ${fl.airline} (${fl.departure_airport} ➔ ${fl.arrival_airport}) · ${fl.departure_date} – ${fl.return_date}`)
+      ? `Рейс: ${fl.airline} (${fl.departure_airport} ➔ ${fl.arrival_airport}) · ${fl.departure_date} – ${fl.return_date}`
+      : `Flight: ${fl.airline} (${fl.departure_airport} ➔ ${fl.arrival_airport}) · ${fl.departure_date} – ${fl.return_date}`)
     : (isRu ? 'Прямой рейс включен в тур' : 'Direct Roundtrip Flight Included');
 
   document.getElementById('booking-summary').innerHTML = `
@@ -1206,8 +1366,27 @@ async function sendMessage(message) {
 
     if (data.state === 'COMPLETE') {
       renderResults(data.results || [], data.flight);
-      addMessage('assistant', t.complete_msg);
-      if (showResultsButton) showResultsButton.classList.remove('hidden');
+      
+      const item = document.createElement('div');
+      item.className = 'agent-message assistant complete-action-message';
+      const ctaText = isRu ? 'Смотреть подобранные туры ↓' : 'View Curated Packages ↓';
+      item.innerHTML = `
+        <div class="bubble">
+          <p style="margin:0 0 10px 0;">${escapeHtml(t.complete_msg)}</p>
+          <button type="button" class="chat-view-results-btn">
+            <span>${ctaText}</span>
+          </button>
+        </div>
+      `;
+      const btn = item.querySelector('.chat-view-results-btn');
+      if (btn) {
+        btn.addEventListener('click', () => {
+          const resSec = document.querySelector('.results-section') || document.getElementById('results');
+          if (resSec) resSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      }
+      messages.appendChild(item);
+      messages.scrollTop = messages.scrollHeight;
     }
   } catch (err) {
     addMessage('assistant', t.error_msg);
@@ -1303,7 +1482,110 @@ fetch('/api/agent/chat', {
   .then((d) => {
     if (d && d.prompts) renderPrompts(d.prompts);
   })
-  .catch(() => {});
+  .catch(() => { });
+
+// Legal Modals handlers
+const privacyModal = document.getElementById('privacy-modal');
+const termsModal = document.getElementById('terms-modal');
+const openPrivacyBtn = document.getElementById('open-privacy-btn');
+const openTermsBtn = document.getElementById('open-terms-btn');
+const privacyCloseBtn = document.getElementById('privacy-close-btn');
+const termsCloseBtn = document.getElementById('terms-close-btn');
+
+function openModalEl(el) {
+  if (el) {
+    el.classList.remove('hidden');
+    el.classList.add('is-open');
+  }
+}
+
+function closeModalEl(el) {
+  if (el) {
+    el.classList.remove('is-open');
+    el.classList.add('hidden');
+  }
+}
+
+if (openPrivacyBtn) openPrivacyBtn.addEventListener('click', () => openModalEl(privacyModal));
+if (openTermsBtn) openTermsBtn.addEventListener('click', () => openModalEl(termsModal));
+if (privacyCloseBtn) privacyCloseBtn.addEventListener('click', () => closeModalEl(privacyModal));
+if (termsCloseBtn) termsCloseBtn.addEventListener('click', () => closeModalEl(termsModal));
+
+[privacyModal, termsModal].forEach((m) => {
+  if (m) {
+    m.addEventListener('click', (e) => {
+      if (e.target === m) closeModalEl(m);
+    });
+  }
+});
+
+// ── Lazy loaded Minimalist Spline 3D Scene ──────────────────────────────────
+function initSplineHeroScene() {
+  const container = document.getElementById('hero-spline-container');
+  if (!container) return;
+
+  // Respect user preference for reduced motion
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    return;
+  }
+
+  // Check if WebGL context is supported
+  const testCanvas = document.createElement('canvas');
+  const gl = testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
+  if (!gl) {
+    container.innerHTML = '<div class="spline-placeholder-fallback"></div>';
+    return;
+  }
+
+  const SCENE_URL = 'https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode';
+
+  let splineApp = null;
+  const observer = new IntersectionObserver((entries) => {
+    const [entry] = entries;
+    if (entry.isIntersecting) {
+      observer.disconnect();
+
+      // Dynamically import @splinetool/runtime without blocking FCP
+      import('https://unpkg.com/@splinetool/runtime@1.9.59/build/runtime.js')
+        .then(({ Application }) => {
+          if (!SCENE_URL) {
+            container.innerHTML = '<div class="spline-placeholder-fallback"></div>';
+            return;
+          }
+          const canvas = document.createElement('canvas');
+          canvas.className = 'spline-canvas';
+          container.innerHTML = '';
+          container.appendChild(canvas);
+
+          splineApp = new Application(canvas);
+          return splineApp.load(SCENE_URL).catch(() => {
+            // Soft fallback if Spline scene CDN is unreachable
+            container.innerHTML = '<div class="spline-placeholder-fallback"></div>';
+          });
+        })
+        .then(() => {
+          // Pause rendering when tab is hidden to save GPU cycles
+          document.addEventListener('visibilitychange', () => {
+            if (splineApp) {
+              try {
+                if (document.hidden) splineApp.stop();
+                else splineApp.play();
+              } catch (_) {}
+            }
+          });
+        })
+        .catch(() => {
+          // Soft silent fallback to clean CSS gradient mesh without console spam
+          container.innerHTML = '<div class="spline-placeholder-fallback"></div>';
+        });
+    }
+  }, { rootMargin: '100px' });
+
+  observer.observe(container);
+}
+
+// Initialize Spline 3D with lazy evaluation
+initSplineHeroScene();
 
 // Initialize application language
 setLanguage(currentLang);

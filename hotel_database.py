@@ -1,9 +1,10 @@
-"""SQLite storage for VoyageAI: Autonomous Travel Concierge catalog."""
+"""SQLite storage for Zari Travel: Autonomous Travel Concierge catalog."""
 
 import json
 import sqlite3
+from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Iterable, List
+from typing import Any, Generator, Iterable, List
 
 
 DATABASE_PATH = Path(__file__).resolve().parent / "zari_travel.db"
@@ -31,7 +32,10 @@ CREATE TABLE IF NOT EXISTS hotels (
     departure_cities_json TEXT NOT NULL,
     max_guests INTEGER NOT NULL,
     summary TEXT NOT NULL,
-    room_options_json TEXT NOT NULL DEFAULT '[]'
+    room_options_json TEXT NOT NULL DEFAULT '[]',
+    distance_beach_m INTEGER NOT NULL DEFAULT 0,
+    distance_center_km REAL NOT NULL DEFAULT 5.0,
+    airport_code TEXT NOT NULL DEFAULT ''
 )
 """
 
@@ -40,30 +44,61 @@ CREATE_INDEXES = [
     "CREATE INDEX IF NOT EXISTS idx_hotels_price ON hotels(package_price_kzt)",
 ]
 
+CREATE_LEADS_TABLE = """
+CREATE TABLE IF NOT EXISTS leads (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    client_name TEXT NOT NULL,
+    client_phone TEXT NOT NULL,
+    client_comment TEXT,
+    hotel_name TEXT NOT NULL,
+    destination TEXT,
+    dates TEXT,
+    flight_info TEXT,
+    meal_plan TEXT,
+    room_category TEXT,
+    total_price_kzt INTEGER,
+    total_price_usd INTEGER,
+    status TEXT DEFAULT 'new'
+)
+"""
 
-def _connection() -> sqlite3.Connection:
-    """Opens SQLite connection with row factory for column-name access."""
-    connection = sqlite3.connect(DATABASE_PATH)
+
+def _configure_connection(connection: sqlite3.Connection) -> None:
+    """Configures connection pragmas for concurrency, WAL mode and performance."""
     connection.row_factory = sqlite3.Row
-    return connection
+    connection.execute("PRAGMA journal_mode = WAL;")
+    connection.execute("PRAGMA synchronous = NORMAL;")
+    connection.execute("PRAGMA busy_timeout = 5000;")
+    connection.execute("PRAGMA foreign_keys = ON;")
+
+
+@contextmanager
+def db_session() -> Generator[sqlite3.Connection, None, None]:
+    """Production context manager with automatic commit/rollback and WAL handling."""
+    conn = sqlite3.connect(DATABASE_PATH, timeout=10.0)
+    _configure_connection(conn)
+    try:
+        yield conn
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
 
 
 def reset_database() -> None:
-    """Removes local DB file to ensure clean database rebuild."""
-    if not DATABASE_PATH.exists():
-        return
-    try:
-        DATABASE_PATH.unlink()
-    except PermissionError:
-        # On Windows, keep existing file and let SQL tables recreate
-        return
+    """Safe no-op in production. Preserves real database and tables."""
+    return
 
 
 def initialize_database(hotels: Iterable[Any]) -> None:
-    """Creates tables and populates with verified VoyageAI catalog."""
+    """Creates schema and seeds catalog without dropping or destroying user data."""
     hotels = list(hotels)
-    with _connection() as connection:
+    with db_session() as connection:
         connection.execute(CREATE_HOTELS_TABLE)
+        connection.execute(CREATE_LEADS_TABLE)
         connection.execute("""
             CREATE TABLE IF NOT EXISTS sessions (
                 session_id TEXT PRIMARY KEY,
@@ -80,8 +115,9 @@ def initialize_database(hotels: Iterable[Any]) -> None:
                 hotel_id, hotel_name, country, country_city, image_url, gallery_images_json,
                 stars, meal_type, package_price_kzt, rating, reviews_count,
                 seats_flight, seats_hotel, amenities_json, pros_json, cons_json,
-                departure_cities_json, max_guests, summary, room_options_json
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                departure_cities_json, max_guests, summary, room_options_json,
+                distance_beach_m, distance_center_km, airport_code
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             [
                 (
@@ -108,6 +144,9 @@ def initialize_database(hotels: Iterable[Any]) -> None:
                         [room.model_dump(mode="json") if hasattr(room, "model_dump") else room for room in hotel.room_options],
                         ensure_ascii=False,
                     ),
+                    getattr(hotel, "distance_beach_m", 0),
+                    getattr(hotel, "distance_center_km", 5.0),
+                    getattr(hotel, "airport_code", ""),
                 )
                 for hotel in hotels
             ],
@@ -116,13 +155,13 @@ def initialize_database(hotels: Iterable[Any]) -> None:
 
 def count_hotels() -> int:
     """Returns total number of properties in the catalog."""
-    with _connection() as connection:
+    with db_session() as connection:
         return connection.execute("SELECT COUNT(*) FROM hotels").fetchone()[0]
 
 
 def countries_counts() -> dict[str, int]:
     """Returns distribution of properties across destinations."""
-    with _connection() as connection:
+    with db_session() as connection:
         rows = connection.execute(
             "SELECT country, COUNT(*) as count FROM hotels GROUP BY country ORDER BY country"
         ).fetchall()
@@ -171,5 +210,34 @@ def search_database(request: Any) -> List[sqlite3.Row]:
         ORDER BY h.rating DESC, total_price_kzt ASC
     """
     parameters.insert(0, request.nights)
-    with _connection() as connection:
+    with db_session() as connection:
         return connection.execute(query, parameters).fetchall()
+
+
+def save_lead(lead_data: dict[str, Any]) -> int:
+    """Safely saves reservation booking lead into SQLite database."""
+    with db_session() as connection:
+        cursor = connection.execute(
+            """
+            INSERT INTO leads (
+                client_name, client_phone, client_comment,
+                hotel_name, destination, dates, flight_info,
+                meal_plan, room_category, total_price_kzt, total_price_usd, status
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                str(lead_data.get("client_name") or "").strip(),
+                str(lead_data.get("client_phone") or "").strip(),
+                str(lead_data.get("client_comment") or "").strip(),
+                str(lead_data.get("hotel_name") or "").strip(),
+                str(lead_data.get("destination") or "").strip(),
+                str(lead_data.get("dates") or "").strip(),
+                str(lead_data.get("flight_info") or "").strip(),
+                str(lead_data.get("meal_plan") or "").strip(),
+                str(lead_data.get("room_category") or "").strip(),
+                int(lead_data.get("total_price_kzt") or 0),
+                int(lead_data.get("total_price_usd") or 0),
+                str(lead_data.get("status") or "new").strip(),
+            ),
+        )
+        return int(cursor.lastrowid or 0)

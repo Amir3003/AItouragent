@@ -1,4 +1,4 @@
-"""Models, mock data, flight simulation, and local search for VoyageAI: Autonomous Travel Concierge.
+"""Models, mock data, flight simulation, and local search for Zari Travel: Autonomous Travel Concierge.
 
 Catalog: Strictly 50 elite properties across 10 top global destinations (5 properties per destination).
 Each property includes verified high-resolution imagery, diverse realistic room tiers,
@@ -35,6 +35,7 @@ class MealType(str, Enum):
     AI = "AI - All Inclusive"
     UAI = "UAI - Ultra All Inclusive"
     FB = "FB - Full Board"
+    HB = "HB - Half Board"
     BB = "BB - Bed & Breakfast"
 
 
@@ -44,6 +45,15 @@ COUNTRIES: List[str] = [
 
 # Currency exchange baseline
 USD_TO_KZT = 500
+
+# ── Meal upgrade pricing per person (delta over BB base, in KZT) ──────────────
+MEAL_UPGRADE_PRICES: dict[str, int] = {
+    "BB - Bed & Breakfast":       0,
+    "HB - Half Board":       65_000,
+    "FB - Full Board":      120_000,
+    "AI - All Inclusive":   190_000,
+    "UAI - Ultra All Inclusive": 280_000,
+}
 
 
 class FlightInfo(BaseModel):
@@ -114,11 +124,13 @@ class HotelRecommendation(BaseModel):
     seats_flight: str
     seats_hotel: str
     pros: List[str] = Field(min_length=3, max_length=3)
+    pros_ru: List[str] = Field(default_factory=list)
     cons: List[str] = Field(min_length=1, max_length=2)
     matched_amenities: List[Amenity] = Field(default_factory=list)
     match_score: int = Field(default=0, ge=0, le=100)
     highlight_badge: str = Field(default="⭐️ Highest Rating")
     summary: str
+    summary_ru: str = ""
     room_options: List[RoomOption] = Field(min_length=2, max_length=6)
     flight: Optional[FlightInfo] = None
     flexible_dates: List[Dict[str, Any]] = Field(default_factory=list)
@@ -132,6 +144,18 @@ class HotelRecommendation(BaseModel):
     in_room_en: str = "Air conditioning, Digital safe (free), Wi-Fi, Hairdryer, Bath/shower, TV, Balcony/terrace, Minibar, Tea/coffee set"
     for_children_en: str = "Kids club, shallow pool, baby cot upon request, high chairs in restaurant"
     territory_en: str = "Swimming pool, a la carte restaurants, fitness center, landscaped gardens, free Wi-Fi"
+    distance_beach_m: int = 0
+    distance_center_km: float = 5.0
+    airport_code: str = ""
+    # Meal plan selector support
+    available_meals: List[str] = Field(default_factory=lambda: [
+        "BB - Bed & Breakfast",
+        "HB - Half Board",
+        "FB - Full Board",
+        "AI - All Inclusive",
+        "UAI - Ultra All Inclusive",
+    ])
+    meal_upgrade_prices: Dict[str, int] = Field(default_factory=lambda: MEAL_UPGRADE_PRICES.copy())
 
 
 class MockHotel(BaseModel):
@@ -152,11 +176,16 @@ class MockHotel(BaseModel):
     seats_hotel: str
     amenities: List[Amenity]
     pros: List[str]
+    pros_ru: List[str] = Field(default_factory=list)
     cons: List[str]
     departure_cities: List[str]
     max_guests: int
     summary: str
+    summary_ru: str = ""
     room_options: List[RoomOption]
+    distance_beach_m: int = 0
+    distance_center_km: float = 5.0
+    airport_code: str = ""
 
 
 class HotelSearchRequest(BaseModel):
@@ -328,6 +357,13 @@ _SPECIFIC_HOTEL_IMAGES = {
     "Katathani Phuket Beach Resort": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&h=800&q=80", # White sand beach cove
     "Centara Grand Beach Resort": "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1200&h=800&q=80", # Seaside resort suites
     "Rosewood Phuket": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&h=800&q=80",            # Emerald bay luxury retreat
+
+    # Maldives: unique per-property photos to eliminate duplicates
+    "Soneva Fushi": "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=1200&h=800&q=80",              # Overwater villa, turquoise lagoon
+    "The Ritz-Carlton Maldives Fari Islands": "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?auto=format&fit=crop&w=1200&h=800&q=80",  # Tropical bungalow & palm-fringed
+    "The Westin Maldives Miriandhoo": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1200&h=800&q=80",  # Island overwater deck
+    "Lily Beach Resort & Spa": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&h=800&q=80",    # Tropical beach & bungalow cove
+    "Kuramathi Maldives": "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&h=800&q=80",         # Famous sandbank spit into ocean
 }
 
 
@@ -568,6 +604,79 @@ def _build_curated_rooms(country: str, base_night_price: int) -> List[RoomOption
     return rooms
 
 
+# ── Country-level airport codes ────────────────────────────────────────────────
+_COUNTRY_AIRPORT: Dict[str, str] = {
+    "Turkey": "AYT", "Egypt": "SSH", "UAE": "DXB", "Thailand": "HKT",
+    "Maldives": "MLE", "Vietnam": "DAD", "Georgia": "BUS",
+    "Sri Lanka": "CMB", "Indonesia": "DPS", "Spain": "BCN",
+}
+
+# ── Per-hotel geo-metrics (distance_beach_m, distance_center_km) ───────────────
+# distance_beach_m = 0 means beachfront / 1st line; positive values in metres.
+# distance_center_km = driving distance to nearest resort/city centre.
+_HOTEL_GEO: Dict[str, tuple] = {
+    # Turkey
+    "Rixos Premium Belek":           (0,    12.0),
+    "Maxx Royal Belek Golf Resort":  (0,    14.0),
+    "Delphin Imperial Lara":         (0,     8.5),
+    "Titanic Mardan Palace":         (50,    9.0),
+    "Cullinan Belek Golf & Spa":     (0,    13.5),
+    # Egypt
+    "Rixos Premium Seagate":         (0,    12.0),
+    "Four Seasons Resort Sharm El Sheikh": (80, 6.0),
+    "Steigenberger ALDAU Beach Hotel": (100, 10.0),
+    "Baron Palms Resort":            (120,  11.5),
+    "Albatros Laguna Vista Resort":  (200,  14.0),
+    # UAE
+    "Atlantis The Royal Dubai":      (0,    22.0),
+    "Burj Al Arab Jumeirah":         (0,    18.0),
+    "One&Only Royal Mirage":         (0,    25.0),
+    "Jumeirah Beach Hotel":          (0,    17.0),
+    "Address Beach Resort JBR":      (0,    15.0),
+    # Thailand
+    "Banyan Tree Phuket":            (0,    18.0),
+    "Amanpuri Phuket":               (0,    20.0),
+    "Katathani Phuket Beach Resort": (0,    22.0),
+    "Centara Grand Beach Resort":    (0,    19.5),
+    "Rosewood Phuket":               (80,   21.0),
+    # Maldives
+    "Soneva Fushi":                  (0,     0.5),
+    "The Ritz-Carlton Maldives Fari Islands": (0, 0.3),
+    "The Westin Maldives Miriandhoo": (0,    0.2),
+    "Lily Beach Resort & Spa":       (0,     0.4),
+    "Kuramathi Maldives":            (0,     0.6),
+    # Vietnam
+    "InterContinental Danang Sun Peninsula": (0, 10.0),
+    "Four Seasons Resort The Nam Hai": (0,   16.0),
+    "Furama Resort Danang":          (0,     7.0),
+    "Hyatt Regency Danang Resort & Spa": (0, 8.5),
+    "Vinpearl Resort & Spa Da Nang": (100,  12.0),
+    # Georgia
+    "Paragraph Resort & Spa Shekvetili": (0, 45.0),
+    "Le Méridien Batumi":            (0,     1.5),
+    "Radisson Blu Hotel Batumi":     (150,   2.0),
+    "Courtyard by Marriott Batumi":  (200,   2.5),
+    "Georgia Palace Hotel & Spa Kobuleti": (0, 60.0),
+    # Sri Lanka
+    "Cape Weligama Luxury Resort":   (0,     3.0),
+    "Anantara Peace Haven Tangalle": (0,     4.0),
+    "Taj Bentota Resort & Spa":      (0,     2.5),
+    "Heritance Ahungalla":           (0,     3.5),
+    "Cinnamon Bey Beruwala":         (50,    2.0),
+    # Indonesia
+    "AYANA Resort Bali":             (0,    15.0),
+    "Bulgari Resort Bali":           (0,    12.0),
+    "The Mulia Nusa Dua Bali":       (0,    14.0),
+    "Padma Resort Legian":           (0,     7.5),
+    "Mandapa, a Ritz-Carlton Reserve": (0,  25.0),
+    # Spain
+    "W Barcelona":                   (0,     5.0),
+    "Hotel Arts Barcelona (Ritz-Carlton)": (0, 4.5),
+    "Mandarin Oriental Barcelona":   (2000,  1.0),
+    "Iberostar Selection Paseo de Gracia": (2500, 1.5),
+    "Majestic Hotel & Spa Barcelona": (1800, 1.0),
+}
+
 # 10 destinations x 5 luxury properties = strictly 50 elite properties
 _CATALOG_DATA = [
     {
@@ -703,9 +812,22 @@ def _build_all_hotels() -> List[MockHotel]:
                 f"Rated {rating}/5 by verified travelers ({reviews:,} reviews)",
                 f"Seamless check-in, award-winning culinary venues & private beach",
             ]
+            pros_ru = [
+                f"Первая береговая линия и собственный пляж в {resort}",
+                f"Высокий рейтинг {rating}/5 по реальным отзывам туристов ({reviews:,} отзывов)",
+                f"Мгновенное подтверждение, авторская кухня и развитая курортная инфраструктура",
+            ]
             cons = [
                 "High seasonal demand: advance booking strongly recommended",
             ]
+
+            meal_ru = default_meal.value if "включено" in default_meal.value.lower() else default_meal.value
+            summary_ru = f"{name} — элитный {stars}★ курорт в {resort} с системой «{meal_ru}» и персональным сервисом."
+
+            geo = _HOTEL_GEO.get(name, (0, 5.0))
+            dist_beach_m: int = geo[0]
+            dist_center_km: float = geo[1]
+            airport = _COUNTRY_AIRPORT.get(country, "")
 
             hotels.append(
                 MockHotel(
@@ -724,11 +846,16 @@ def _build_all_hotels() -> List[MockHotel]:
                     seats_hotel="Instant Confirmation",
                     amenities=all_amenities,
                     pros=pros,
+                    pros_ru=pros_ru,
                     cons=cons,
                     departure_cities=["Astana", "Almaty", "Shymkent", "NQZ", "ALA", "CIT", "Астана", "Алматы"],
                     max_guests=6,
                     summary=f"{name} is an elite {stars}-star sanctuary in {resort}, featuring {default_meal.value} and personalized hospitality.",
+                    summary_ru=summary_ru,
                     room_options=rooms,
+                    distance_beach_m=dist_beach_m,
+                    distance_center_km=dist_center_km,
+                    airport_code=airport,
                 )
             )
             global_idx += 1
@@ -874,12 +1001,24 @@ def mock_search_tourvisor_api(request: HotelSearchRequest) -> List[HotelRecommen
                 "total_usd": int(round(alt_total / USD_TO_KZT)),
             })
 
+        # Dynamically build Russian pros and summary from DB row values
+        resort_name = row["country_city"].split(",")[-1].strip() if "," in row["country_city"] else row["country_city"]
+        pros_ru_dynamic = [
+            f"Первая береговая линия и собственный пляж в {resort_name}",
+            f"Высокий рейтинг {row['rating']}/5 по реальным отзывам туристов ({row['reviews_count']:,} отзывов)",
+            "Мгновенное подтверждение, авторская кухня и развитая курортная инфраструктура",
+        ]
+        summary_ru_dynamic = (
+            f"{row['hotel_name']} — элитный {row['stars']}★ курорт в {resort_name} "
+            f"с системой «{board_desc}» и персональным сервисом."
+        )
+
         recommendations.append(
             HotelRecommendation(
                 id=row["hotel_id"],
                 hotel_name=row["hotel_name"],
                 country=row["country"],
-                resort=row["country_city"].split(",")[-1].strip() if "," in row["country_city"] else row["country_city"],
+                resort=resort_name,
                 country_city=row["country_city"],
                 image_url=row["image_url"],
                 gallery_images=gallery,
@@ -896,11 +1035,13 @@ def mock_search_tourvisor_api(request: HotelSearchRequest) -> List[HotelRecommen
                 seats_flight=row["seats_flight"],
                 seats_hotel=row["seats_hotel"],
                 pros=json.loads(row["pros_json"]),
+                pros_ru=pros_ru_dynamic,
                 cons=json.loads(row["cons_json"]),
                 matched_amenities=amenities,
                 match_score=min(99, match_score),
-                highlight_badge="⭐️ Highest Rating",
+                highlight_badge="Highest Rating",
                 summary=row["summary"],
+                summary_ru=summary_ru_dynamic,
                 room_options=rooms,
                 flight=flight_data,
                 flexible_dates=flexible_dates,
@@ -914,6 +1055,9 @@ def mock_search_tourvisor_api(request: HotelSearchRequest) -> List[HotelRecommen
                 in_room_en=in_room_spec_en,
                 for_children_en=children_spec_en,
                 territory_en=territory_spec_en,
+                distance_beach_m=int(row["distance_beach_m"]) if "distance_beach_m" in row.keys() else 0,
+                distance_center_km=float(row["distance_center_km"]) if "distance_center_km" in row.keys() else 5.0,
+                airport_code=str(row["airport_code"]) if "airport_code" in row.keys() else "",
             )
         )
 
